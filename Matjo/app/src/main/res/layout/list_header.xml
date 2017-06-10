@@ -1,0 +1,52 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingLeft="13dp"
+    android:paddingStart="13dp"
+    android:paddingRight="10dp"
+    android:paddingEnd="10dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:background="#fff"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+
+    <ImageView
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:src="@mipmap/ic_launcher"
+        android:id="@+id/header_profile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="20dp"/>
+
+    <TextView
+        android:layout_toRightOf="@id/header_profile"
+        android:layout_alignTop="@+id/header_profile"
+        android:id="@+id/header_title"
+        android:textColor="@color/app_blue"
+        android:textSize="18sp"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="리뷰 타이틀"/>
+
+    <TextView
+        android:layout_alignBottom="@+id/header_profile"
+        android:layout_toRightOf="@id/header_profile"
+        android:id="@+id/header_rating"
+        android:textColor="@color/app_blue"
+        android:textSize="12sp"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="리뷰 평점"/>
+
+    <ImageView
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/btn_expand_toggle"
+        android:src="@drawable/circle_plus"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_weight="0"/>
+</RelativeLayout>

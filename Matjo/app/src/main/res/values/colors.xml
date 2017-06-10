@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF3D00</color>
+    <color name="colorPrimaryDark">#DD2C00</color>
+    <!--<color name="colorAccent">#F0F0F0</color>-->
+    <color name="colorAccent">#FF3D00</color>
+
+    <color name="colorFab">#00B700</color>
+    <color name="app_blue">#045CB1</color>
+</resources>

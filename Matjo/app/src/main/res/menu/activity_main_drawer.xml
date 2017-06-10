@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="홈" />
+        <item
+            android:id="@+id/nav_mywalks"
+            android:icon="@drawable/ic_mywalks"
+            android:title="나의 발자취" />
+        <item
+            android:id="@+id/nav_promotion"
+            android:icon="@drawable/ic_promotion"
+            android:title="프로모션" />
+        <item
+            android:id="@+id/nav_rank"
+            android:icon="@drawable/ic_rank"
+            android:title="모임 랭킹" />
+    </group>
+
+    <item android:title="맛조의 소리">
+        <menu>
+            <item
+                android:id="@+id/nav_inform"
+                android:icon="@drawable/ic_inform"
+                android:title="공지 사항" />
+            <item
+                android:id="@+id/nav_setting"
+                android:icon="@drawable/ic_setting"
+                android:title="환경 설정" />
+        </menu>
+    </item>
+
+</menu>
