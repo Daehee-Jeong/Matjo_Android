@@ -9,8 +9,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,29 +21,28 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kosta148.matjo.R;
 
-import org.w3c.dom.Text;
-
 public class MainActivity extends AppCompatActivity {
     Handler handler = new Handler();
     Toolbar toolbar;
     SearchView mSearchView;
-    TextView toolbarTitle;
     Toast t;
     MainFragment mainFragment;
     FragmentManager fm;
     FloatingActionButton fab;
     Context context;
-    DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
     ImageView ivLogo;
-
     TextView tvLogout;
+    NotiFragment notiFragment = new NotiFragment();
+    DrawerLayout drawer;
 
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
@@ -52,6 +51,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHAREDPREFERENCES_LOGIN_ID = "LoginId";
     private static final String SHAREDPREFERENCES_LOGIN_PW = "LoginPassword";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
+
+    private boolean notiVisiblity = false;
+
+    Animation fabAnimShrink;
+    Animation  fabAnimInflate;
+    Animation  fragmentShrink;
+    Animation fragmentInflate;
+    Animation  animFade;
+
+    NavigationView navigationLeftView;
+    NavigationView navigationRightView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.search);
+        toolbar.setOnMenuItemClickListener(menuItemClickListener);
         ivLogo = (ImageView) findViewById(R.id.toolbar_logo_iv);
 
         mSearchView = (SearchView) toolbar.getMenu().findItem(R.id.menu_search).getActionView();
@@ -84,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
+                animateFloatingActionButton();
+                toggleFragment();
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
@@ -99,9 +112,9 @@ public class MainActivity extends AppCompatActivity {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationLeftView = (NavigationView) findViewById(R.id.nav_left_view);
+        navigationLeftView = (NavigationView) findViewById(R.id.nav_left_view);
         navigationLeftView.setNavigationItemSelectedListener(onNavItemSelectedListener);
-        NavigationView navigationRightView = (NavigationView) findViewById(R.id.nav_right_view);
+        navigationRightView = (NavigationView) findViewById(R.id.nav_right_view);
         navigationRightView.setNavigationItemSelectedListener(onNavItemSelectedListener);
 
         // 액티비티에서 id 찾기 에러
@@ -112,6 +125,13 @@ public class MainActivity extends AppCompatActivity {
         Log.e("아이디", tvLogout + "");
         tvLogout.setOnClickListener(mClickListener);
 
+
+        fabAnimShrink = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shrink);
+        fabAnimInflate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.inflate);
+        fragmentShrink = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shrink_fragment);
+        fragmentInflate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.inflate_fragment);
+        animFade = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
+
     } // end of onCreate
 
     @Override
@@ -119,28 +139,18 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (sharedPreferences != null) {
             showToast("로그인 ID: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_ID, "") +
-                      "로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, ""));
+                    "로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, ""));
         }
     } // end of onResume
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.search, menu); // onCreate 에서 이미 inflate 하였다.
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (/*id == R.id.action_settings*/ true) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -157,6 +167,17 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         if (t != null) t.cancel();
     }
+
+    Toolbar.OnMenuItemClickListener menuItemClickListener = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            int id = item.getItemId();
+            if (id == R.id.menu_filter) {
+                drawer.openDrawer(GravityCompat.END);
+            }
+            return true;
+        }
+    };
 
     /* 뒤로가기 시 실제 핸들링 처리 부분 */
     Runnable backKeyRun = new Runnable() {
@@ -184,18 +205,68 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }else {
+        } else if (drawer.isDrawerOpen(GravityCompat.END)) {
+            drawer.closeDrawer(GravityCompat.END);
+        } else {
             handler.post(backKeyRun);
-//            if (isWeatherFragment) {
-//                handler.post(backKeyRun);
-//            } else {
-//                animateFloatingActionButton();
-//                toggleFragment();
-//            }
+            if (!notiVisiblity) {
+                handler.post(backKeyRun);
+            } else {
+                animateFloatingActionButton();
+                toggleFragment();
+            }
         }
     } // end of onBackPressed
 
-    /* SearchView 구현을 위한 OnQueryTextListener 객체생성 */
+
+    /**
+     * Fab 클릭시 애니메이션을 실행하는 메서드
+     */
+    public void animateFloatingActionButton() {
+        fabAnimShrink.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (notiVisiblity) { // 뉴스피드 화면일때의 아이콘 설정
+                    fab.setImageResource(R.mipmap.ic_launcher);
+                } else { // 뉴스피드 화면이 아닐때의 아이콘 설정
+                    fab.setImageResource(R.mipmap.ic_launcher);
+                }
+                fab.startAnimation(fabAnimInflate);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        fab.startAnimation(fabAnimShrink);
+    } // end ofanimateFloatingActionButton()
+
+
+    /**
+     * Fab 클릭시 애니메이션 동작 이후, 실제 프래그먼트 전환을 하기위한 메서드
+     */
+    public void toggleFragment() {
+        FragmentTransaction tran = fm.beginTransaction();
+        tran.setCustomAnimations(R.anim.inflate_fragment_300, R.anim.shrink_fragment, R.anim.inflate_fragment_300, R.anim.shrink_fragment);
+        if (!notiVisiblity) { // 노티목록 화면이 아니라면
+            tran.add(R.id.container, notiFragment); // 보여줘라
+            tran.addToBackStack(null);
+            notiVisiblity = true; // 상태변경
+        } else { // 노티목록 화면이라면
+            fm.popBackStack(); // 화면제거해라
+            notiVisiblity = false;
+        }
+        tran.commit();
+    }
+
+
+    /**
+     * SearchView 구현을 위한 OnQueryTextListener 객체생성
+     */
     SearchView.OnQueryTextListener mQueryTextListener = new SearchView.OnQueryTextListener() {
         @Override
         public boolean onQueryTextSubmit(String query) {
@@ -226,33 +297,33 @@ public class MainActivity extends AppCompatActivity {
 
     NavigationView.OnNavigationItemSelectedListener onNavItemSelectedListener =
             new NavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            // Handle navigation view item clicks here.
-            int id = item.getItemId();
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    // Handle navigation view item clicks here.
+                    int id = item.getItemId();
 
-            if (id == R.id.nav_home) {
-                // TODO : 홈 클릭 시 홈으로 이동 : default
+                    if (id == R.id.nav_home) {
+                        // TODO : 홈 클릭 시 홈으로 이동 : default
 
-            } else if (id == R.id.nav_mywalks) {
-                // TODO : 나의 발자취 이동
+                    } else if (id == R.id.nav_mywalks) {
+                        // TODO : 나의 발자취 이동
 
-            } else if (id == R.id.nav_promotion) {
-                // TODO : 프로모션 이동
+                    } else if (id == R.id.nav_promotion) {
+                        // TODO : 프로모션 이동
 
-            } else if (id == R.id.nav_rank) {
-                // TODO : 모임 랭킹 이동
-            } else if (id == R.id.nav_inform) {
-                // TODO : 공지 사항 창
-            } else if (id == R.id.nav_setting) {
-                // TODO : 환경 설정 창
-            }
+                    } else if (id == R.id.nav_rank) {
+                        // TODO : 모임 랭킹 이동
+                    } else if (id == R.id.nav_inform) {
+                        // TODO : 공지 사항 창
+                    } else if (id == R.id.nav_setting) {
+                        // TODO : 환경 설정 창
+                    }
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
-        }
-    };
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START);
+                    return true;
+                }
+            };
 
     /* UI 컴포넌트의 클릭이벤트 관리를 위한 클릭리스너 객체 생성 */
     View.OnClickListener mClickListener = new View.OnClickListener() {

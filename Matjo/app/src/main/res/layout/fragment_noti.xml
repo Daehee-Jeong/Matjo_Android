@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eee">
+    android:background="#29f"
+    android:clickable="true">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center|center"
         android:textSize="30sp"
-        android:text="NewsFeedFragment"/>
+        android:text="NotiFragment"/>
 
 </LinearLayout>
