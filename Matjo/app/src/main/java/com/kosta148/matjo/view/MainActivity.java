@@ -4,6 +4,7 @@ package com.kosta148.matjo.view;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -269,8 +270,17 @@ public class MainActivity extends AppCompatActivity {
      */
     SearchView.OnQueryTextListener mQueryTextListener = new SearchView.OnQueryTextListener() {
         @Override
-        public boolean onQueryTextSubmit(String query) {
+        public boolean onQueryTextSubmit(String searchText) {
             // 검색 동작 수행
+            switch(mainFragment.currentPos) {
+                case 1:
+                    // 맛집 검색시 RestaListFragment로 query 값을 넘긴다
+                    RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
+                    rlf.searchResta(searchText);
+                    break;
+                case 2:
+                    break;
+            }
             return false; // 정상적 처리 완료시 true 로 핸들링 완료를 표시한다.
         }
         @Override
@@ -345,4 +355,5 @@ public class MainActivity extends AppCompatActivity {
             } // end of switch
         } // end of onClick()
     };
+
 } // end of class

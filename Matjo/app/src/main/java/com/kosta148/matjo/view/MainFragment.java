@@ -22,6 +22,7 @@ public class MainFragment extends Fragment {
     MainActivity mainActivity;
     PagerSlidingTabStrip tabStrip;
     TabLayout tabLayout;
+    int currentPos = 0;
 
     @Nullable
     @Override
@@ -39,6 +40,7 @@ public class MainFragment extends Fragment {
             }
             @Override
             public void onPageSelected(int position) {
+                currentPos = position;
             }
             @Override
             public void onPageScrollStateChanged(int state) {
