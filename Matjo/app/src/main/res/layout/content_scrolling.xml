@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.kosta148.matjo.coordinatorlayout.ScrollingActivity"
+    tools:context="com.kosta148.matjo.coordinatorlayout.RestaDetailActivity"
     tools:showIn="@layout/activity_scrolling">
 
     <LinearLayout
@@ -29,7 +29,7 @@
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.kosta148.matjo.coordinatorlayout.ScrollingActivity"
-    tools:showIn="@layout/activity_scrolling">
+    tools:showIn="@layout/activity_resta_detail">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPagerMain"

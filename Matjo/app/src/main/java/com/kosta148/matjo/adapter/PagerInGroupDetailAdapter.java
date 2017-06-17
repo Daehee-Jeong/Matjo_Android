@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.kosta148.matjo.view.GroupInfoFragment;
+import com.kosta148.matjo.view.GroupReviewFragment;
 import com.kosta148.matjo.view.RestaurantInfoFragment;
 import com.kosta148.matjo.view.RestaurantReviewFragment;
 
@@ -11,11 +13,11 @@ import com.kosta148.matjo.view.RestaurantReviewFragment;
  * Created by Daehee on 2017-05-14.
  */
 
-public class PagerMainAdapter extends FragmentStatePagerAdapter {
+public class PagerInGroupDetailAdapter extends FragmentStatePagerAdapter {
     // 탭 타이틀
-    private String[] tabTitles = new String[]{"음식점 정보", "모임 리뷰", };
+    private String[] tabTitles = new String[]{"모임 정보", "모임 리뷰", };
 
-    public PagerMainAdapter(FragmentManager fm) {
+    public PagerInGroupDetailAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -23,11 +25,11 @@ public class PagerMainAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                RestaurantInfoFragment rif = new RestaurantInfoFragment();
-                return rif;
+                GroupInfoFragment gif = new GroupInfoFragment();
+                return gif;
             case 1:
-                RestaurantReviewFragment rlf = new RestaurantReviewFragment();
-                return rlf;
+                GroupReviewFragment glf = new GroupReviewFragment();
+                return glf;
             default:
                 return null;
         }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.kosta148.matjo.coordinatorlayout.ScrollingActivity">
+    tools:context="com.kosta148.matjo.view.GroupDetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -102,7 +102,7 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:fitsSystemWindows="true"
-tools:context="com.kosta148.matjo.coordinatorlayout.ScrollingActivity">
+tools:context="com.kosta148.matjo.coordinatorlayout.RestaDetailActivity">
 
 <android.support.design.widget.AppBarLayout
     android:id="@+id/app_bar"

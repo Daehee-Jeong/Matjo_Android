@@ -20,16 +20,16 @@ import java.util.List;
  * Created by Daehee on 2017-05-14.
  */
 
-public class RestaurantReviewFragment extends Fragment {
+public class GroupReviewFragment extends Fragment {
     private RecyclerView recyclerview;
-    RestaDetailActivity restaDetailActivity;
+    GroupDetailActivity groupDetailActivity;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_restaurant_review, container, false);
 
-        restaDetailActivity = (RestaDetailActivity) getActivity();
+        groupDetailActivity = (GroupDetailActivity) getActivity();
 
         recyclerview = (RecyclerView) v.findViewById(R.id.recyclerview);
         recyclerview.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -78,7 +78,7 @@ public class RestaurantReviewFragment extends Fragment {
         places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
         data.add(places);
 
-        recyclerview.setAdapter(new ExpandableListAdapter(data, restaDetailActivity.getApplicationContext()));
+        recyclerview.setAdapter(new ExpandableListAdapter(data, groupDetailActivity.getApplicationContext()));
 
         return v;
     } // end of onCreateView

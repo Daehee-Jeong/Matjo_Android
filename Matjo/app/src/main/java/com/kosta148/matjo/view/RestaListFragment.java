@@ -26,7 +26,7 @@ public class RestaListFragment extends Fragment {
         v.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mainActivity.getApplicationContext(), ScrollingActivity.class);
+                Intent intent = new Intent(mainActivity.getApplicationContext(), RestaDetailActivity.class);
                 mainActivity.startActivity(intent);
             }
         });

@@ -1,21 +1,21 @@
 package com.kosta148.matjo.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
-import com.kosta148.matjo.adapter.PagerMainAdapter;
+import com.kosta148.matjo.adapter.PagerInRestaDetailAdapter;
 
-public class ScrollingActivity extends AppCompatActivity {
+public class RestaDetailActivity extends AppCompatActivity {
     // 본 액티비티의 호출부에서 인텐트를 통해 업소명, 사진경로 배열등을 보내주는 식으로 작업하면 된다.
     // 다량의 데이터 (업소 사진들)
     int resArr[] = {
@@ -29,13 +29,13 @@ public class ScrollingActivity extends AppCompatActivity {
     ViewPager viewPagerInToolbar;
     PagerInToolBarAdapter pagerInToolBarAdapter;
     ViewPager viewPagerMain;
-    PagerMainAdapter pagerMainAdapter;
+    PagerInRestaDetailAdapter pagerInRestaDetailAdapter;
     TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scrolling);
+        setContentView(R.layout.activity_resta_detail);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(name);
@@ -79,11 +79,19 @@ public class ScrollingActivity extends AppCompatActivity {
         // 1. 뷰페이저 생성
         viewPagerMain = (ViewPager) findViewById(R.id.viewPagerMain);
         // 2. 어댑터 생성 및 페이저에 등록
-        pagerMainAdapter = new PagerMainAdapter(getSupportFragmentManager());
-        viewPagerMain.setAdapter(pagerMainAdapter);
+        pagerInRestaDetailAdapter = new PagerInRestaDetailAdapter(getSupportFragmentManager());
+        viewPagerMain.setAdapter(pagerInRestaDetailAdapter);
         // 3. 탭 인디케이터 생성 및 페이저에 연결
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabStrip);
         tabStrip.setViewPager(viewPagerMain);
 
     } // end of onCreate
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 } // end of class

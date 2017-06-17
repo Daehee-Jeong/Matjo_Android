@@ -1,5 +1,6 @@
 package com.kosta148.matjo.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,14 @@ public class GroupListFragment extends Fragment {
         View v;
         v = inflater.inflate(R.layout.fragment_group_list, container, false);
         mainActivity = (MainActivity) getActivity();
+
+        v.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mainActivity.getApplicationContext(), GroupDetailActivity.class);
+                mainActivity.startActivity(intent);
+            }
+        });
 
         return v;
     } // end of onCreateView
