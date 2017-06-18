@@ -105,7 +105,7 @@
             android:ems="5"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:hint="시/군"
+            android:hint="광역시/도"
             android:inputType="textPersonName" />
 
         <EditText
@@ -115,7 +115,7 @@
             android:ems="5"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:hint="구/읍/면"
+            android:hint="시/군/구"
             android:inputType="textPersonName" />
 
     </LinearLayout>

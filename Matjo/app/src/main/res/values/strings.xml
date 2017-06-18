@@ -24,10 +24,10 @@
     </string-array>
 
     <string-array name="spinner_question">
-        <item>보물1호는?</item>
-        <item>출신 초등학교 이름은?</item>
-        <item>어렸을 적 단짝 친구 이름은?</item>
-        <item>가장 잘 생긴 사람은?</item>
+        <item>나의 학창시절 별명은?</item>
+        <item>나의 보물 제 1호는?</item>
+        <item>나의 가족 수는?</item>
+        <item>나의 애완동물 이름은?</item>
     </string-array>
 
     <string name="large_text">

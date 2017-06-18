@@ -4,16 +4,33 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
+import com.kosta148.matjo.data.MemberBean;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by DaeHyoung on 2017-05-14.
@@ -42,10 +59,12 @@ public class MemberJoinActivity extends AppCompatActivity {
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
 
-    // SHaredPreferences 키 상수
+    // SharedPreferences 키 상수
     private static final String SHAREDPREFERENCES_LOGIN_ID = "LoginId";
     private static final String SHAREDPREFERENCES_LOGIN_PW = "LoginPassword";
 
+    // Handler 객체
+    Handler handler = new Handler();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,14 +101,7 @@ public class MemberJoinActivity extends AppCompatActivity {
                     return;
                 }
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(SHAREDPREFERENCES_LOGIN_ID, etId.getText().toString());
-                editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
-                editor.commit(); // 변경사항을 저장하기
-
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
+                insertVolley();
             }
         });
 
@@ -180,5 +192,64 @@ public class MemberJoinActivity extends AppCompatActivity {
                 break;
         }
     } // end of onPrepareDialog
+
+    // 회원가입 서버연동
+    public void insertVolley() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/member/insertMemberProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(SHAREDPREFERENCES_LOGIN_ID, etId.getText().toString());
+                    editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
+                    editor.commit(); // 변경사항을 저장하기
+
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "회원가입에 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberId", etId.getText().toString()+"@"+etEmail.getText().toString());
+                params.put("memberPw", etPassword.getText().toString());
+                params.put("memberName", etNickname.getText().toString());
+                params.put("memberHp", spinnerHp.getSelectedItem().toString()+etHp.getText().toString());
+                params.put("memberCity", etAddress1.getText().toString());
+                params.put("memberLocal", etAddress2.getText().toString());
+                params.put("memberQuestion", spinnerQuestion.getSelectedItemPosition()+"");
+                params.put("memberAnswer", etAnswer.getText().toString());
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
 
 } // end of class
