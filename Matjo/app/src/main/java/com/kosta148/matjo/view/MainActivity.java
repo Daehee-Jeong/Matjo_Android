@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tvLogout;
     NotiFragment notiFragment = new NotiFragment();
     DrawerLayout drawer;
+    int pageNo = 1; // 검색 요청 페이지 번호
 
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
@@ -276,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     // 맛집 검색시 RestaListFragment로 query 값을 넘긴다
                     RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
-                    rlf.searchResta(searchText);
+                    rlf.searchResta(searchText, 1);
                     break;
                 case 2:
                     break;

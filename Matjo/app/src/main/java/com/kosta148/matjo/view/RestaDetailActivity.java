@@ -1,5 +1,6 @@
 package com.kosta148.matjo.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -14,6 +15,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
 import com.kosta148.matjo.adapter.PagerInRestaDetailAdapter;
+import com.kosta148.matjo.data.DaumLocalBean;
 
 public class RestaDetailActivity extends AppCompatActivity {
     // 본 액티비티의 호출부에서 인텐트를 통해 업소명, 사진경로 배열등을 보내주는 식으로 작업하면 된다.
@@ -31,6 +33,7 @@ public class RestaDetailActivity extends AppCompatActivity {
     ViewPager viewPagerMain;
     PagerInRestaDetailAdapter pagerInRestaDetailAdapter;
     TabLayout tabLayout;
+    DaumLocalBean dlBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,11 @@ public class RestaDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        // 받아온 인텐트 꺼냄
+        Intent intent = getIntent();
+        dlBean = (DaumLocalBean) intent.getSerializableExtra("dlBean");
 
         // 기본 UI 컴포넌트 생성
         tvScrollingIndex = (TextView) findViewById(R.id.tvScrollingIndex);

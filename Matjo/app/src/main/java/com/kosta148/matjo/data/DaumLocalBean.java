@@ -1,10 +1,12 @@
 package com.kosta148.matjo.data;
 
+import java.io.Serializable;
+
 /**
  * Created by Daehee on 2017-06-17.
  */
 
-public class DaumLocalBean {
+public class DaumLocalBean implements Serializable{
     private String restaId;
     private String restaTitle;
     private String restaCate;

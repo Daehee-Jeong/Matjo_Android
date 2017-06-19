@@ -7,8 +7,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.kosta148.matjo.R;
+import com.kosta148.matjo.adapter.RestaListAdapter;
+import com.kosta148.matjo.data.DaumLocalBean;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Daehee on 2017-04-26.
@@ -23,14 +29,6 @@ public class GroupListFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_group_list, container, false);
         mainActivity = (MainActivity) getActivity();
 
-        v.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mainActivity.getApplicationContext(), GroupDetailActivity.class);
-                mainActivity.startActivity(intent);
-            }
-        });
-
         return v;
     } // end of onCreateView
-}
+} // end of class

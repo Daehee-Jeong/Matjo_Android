@@ -4,17 +4,11 @@
     android:layout_height="match_parent"
     android:background="#eee">
 
-    <TextView
+    <GridView
+        android:id="@+id/gridView01"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center|center"
-        android:textSize="30sp"
-        android:text="GroupListFragment"/>
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="그룹 리스트 아이템 클릭"/>
+    </GridView>
 
 </LinearLayout>
