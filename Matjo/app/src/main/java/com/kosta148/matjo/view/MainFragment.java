@@ -41,7 +41,22 @@ public class MainFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 currentPos = position;
-            }
+                tabLayout.getTabAt(0).setIcon(R.mipmap.ic_news_feed_white_36dp_default);
+                tabLayout.getTabAt(1).setIcon(R.mipmap.ic_restaurant_white_36dp_default);
+                tabLayout.getTabAt(2).setIcon(R.mipmap.ic_people_36dp_default);
+
+                switch(position) {
+                    case 0:
+                        tabLayout.getTabAt(0).setIcon(R.mipmap.ic_news_feed_white_36dp_pressed);
+                        break;
+                    case 1:
+                        tabLayout.getTabAt(1).setIcon(R.mipmap.ic_restaurant_white_36dp_pressed);
+                        break;
+                    case 2:
+                        tabLayout.getTabAt(2).setIcon(R.mipmap.ic_people_36dp_pressed);
+                        break;
+                } // end of switch
+            } // end of pageSelected()
             @Override
             public void onPageScrollStateChanged(int state) {
             }
@@ -52,9 +67,9 @@ public class MainFragment extends Fragment {
         tabLayout = (TabLayout) v.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        tabLayout.getTabAt(0).setIcon(R.mipmap.ic_launcher);
-        tabLayout.getTabAt(1).setIcon(R.mipmap.ic_launcher);
-        tabLayout.getTabAt(2).setIcon(R.mipmap.ic_launcher);
+        tabLayout.getTabAt(0).setIcon(R.mipmap.ic_news_feed_white_36dp_pressed);
+        tabLayout.getTabAt(1).setIcon(R.mipmap.ic_restaurant_white_36dp_default);
+        tabLayout.getTabAt(2).setIcon(R.mipmap.ic_people_36dp_default);
 
         return v;
     } // end of onCreateView

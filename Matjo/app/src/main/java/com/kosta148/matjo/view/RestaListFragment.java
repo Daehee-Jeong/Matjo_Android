@@ -71,7 +71,7 @@ public class RestaListFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mainActivity.showToast(restaList.get(position).getRestaTitle());
-            Intent intent = new Intent();
+            Intent intent = new Intent(getActivity().getApplicationContext(), RestaDetailActivity.class);
             DaumLocalBean dlBean = restaList.get(position);
             intent.putExtra("dlBean", dlBean);
             startActivity(intent);

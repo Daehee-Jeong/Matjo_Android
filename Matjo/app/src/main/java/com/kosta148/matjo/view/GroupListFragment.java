@@ -226,7 +226,6 @@ public class GroupListFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {//'...'은 배열의 역할을 한다. 무한정으로 값을 추가해 줄 수 있다
 
-
             return null;
         }
 
