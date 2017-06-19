@@ -13,6 +13,7 @@
             android:layout_height="100dp"
             android:background="@android:color/white">
             <TextView
+                android:id="@+id/groupLeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -31,6 +32,7 @@
             android:layout_height="100dp"
             android:background="@android:color/white">
             <TextView
+                android:id="@+id/groupInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -44,25 +46,12 @@
             android:layout_height="5dp"
             android:tag="간선"/>
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:map="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/mapFragment"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            tools:context="com.kosta148.matjo.testmap.MapsActivity" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:tag="간선"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:background="@android:color/white">
             <TextView
+                android:id="@+id/groupSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -70,60 +59,5 @@
                 android:textSize="16sp"
                 android:text="정보 3 (메뉴 정보)"/>
         </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:tag="간선"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@android:color/white">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 4 (업소 내부 정보)"/>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:tag="간선"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@android:color/white">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 5"/>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:tag="간선"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@android:color/white">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 6"/>
-        </LinearLayout>
-
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
