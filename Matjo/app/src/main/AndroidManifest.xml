@@ -71,6 +71,22 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".view.NoticeWebViewActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.InquiryWebViewActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.PromotionWebViewActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.SetupActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
