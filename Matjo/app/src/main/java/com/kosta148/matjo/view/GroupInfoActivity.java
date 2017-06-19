@@ -8,7 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.kosta148.matjo.R;
+import com.kosta148.matjo.util.RoundedDrawable;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Created by Daehee on 2017-05-15.

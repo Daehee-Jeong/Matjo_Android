@@ -1,4 +1,4 @@
-package com.kosta148.matjo.view;
+package com.kosta148.matjo.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;

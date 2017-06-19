@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kosta148.matjo.R;
-import com.kosta148.matjo.view.RoundedDrawable;
+import com.kosta148.matjo.util.RoundedDrawable;
 
 import java.util.ArrayList;
 import java.util.List;
