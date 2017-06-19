@@ -1,11 +1,18 @@
 package com.kosta148.matjo.view;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -14,7 +21,15 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.PagerInGroupDetailAdapter;
 import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
-import com.kosta148.matjo.adapter.PagerInRestaDetailAdapter;
+import com.kosta148.matjo.bean.GroupBean;
+import com.kosta148.matjo.bean.ReviewBean;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+
 
 public class GroupDetailActivity extends AppCompatActivity {
     // 본 액티비티의 호출부에서 인텐트를 통해 업소명, 사진경로 배열등을 보내주는 식으로 작업하면 된다.
@@ -32,15 +47,33 @@ public class GroupDetailActivity extends AppCompatActivity {
     ViewPager viewPagerMain;
     PagerInGroupDetailAdapter pagerInGroupDetailAdapter;
     TabLayout tabLayout;
+    Handler handler = new Handler();
+    ActionBar actionBar;
+
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_resta_detail);
+        setContentView(R.layout.activity_group_detail);
+
+        Log.d("MyLog", "open GroupDetailActivity");
+
+        // 값 받기
+        Intent intent = getIntent();
+        GroupBean groupBean = (GroupBean)intent.getSerializableExtra("gBean");
+        // TODO reviewBean도 받아오자
+        ArrayList<ReviewBean> reviewList = intent.getParcelableArrayListExtra("reviewList");
+
+        Log.d("MyLog", "값 받음 ; "+groupBean.getGroupName());
+        Log.d("MyLog", "review pereview도 잘 들어왔나여 : "+reviewList.get(0).getPereviewJSArray());
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(name);
+        getSupportActionBar().setTitle(groupBean.getGroupName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        actionBar = getSupportActionBar();
 
         // 기본 UI 컴포넌트 생성
         tvScrollingIndex = (TextView) findViewById(R.id.tvScrollingIndex);
@@ -80,11 +113,15 @@ public class GroupDetailActivity extends AppCompatActivity {
         // 1. 뷰페이저 생성
         viewPagerMain = (ViewPager) findViewById(R.id.viewPagerMain);
         // 2. 어댑터 생성 및 페이저에 등록
-        pagerInGroupDetailAdapter = new PagerInGroupDetailAdapter(getSupportFragmentManager());
+        pagerInGroupDetailAdapter = new PagerInGroupDetailAdapter(getSupportFragmentManager(), groupBean, reviewList);
         viewPagerMain.setAdapter(pagerInGroupDetailAdapter);
         // 3. 탭 인디케이터 생성 및 페이저에 연결
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabStrip);
         tabStrip.setViewPager(viewPagerMain);
+
+        // Web API 호출부분
+        // TODO groupNo 예시로 7 설정해놓음 - 유동적으로 받아올 수 있게 변경하기
+//        new CallGroupDetailTask("7").execute();
 
     } // end of onCreate
 
@@ -95,4 +132,38 @@ public class GroupDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private class CallImageByUrlTask extends AsyncTask<String, Void, String> {
+
+        private  String strUrl;
+        public CallImageByUrlTask(String strUrl){
+            this.strUrl = strUrl;
+        }
+        @Override
+        protected String doInBackground(String... params) {//'...'은 배열의 역할을 한다. 무한정으로 값을 추가해 줄 수 있다
+            try {
+                URL url = new URL(strUrl);
+
+                HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                conn.setDoInput(true);
+                conn.connect();
+
+                InputStream is = conn.getInputStream();
+                bitmap = BitmapFactory.decodeStream(is);
+
+            } catch (IOException ex) {
+
+            }
+
+            return null;
+        }
+
+        // json 결과값 받아와서 처리해주는 부분
+        @Override
+        protected void onPostExecute(String s) {
+
+        }
+
+    }
+
 } // end of class

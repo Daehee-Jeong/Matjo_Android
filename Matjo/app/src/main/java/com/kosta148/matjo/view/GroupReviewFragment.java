@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.ExpandableListAdapter;
+import com.kosta148.matjo.bean.ReviewBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,8 @@ public class GroupReviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_restaurant_review, container, false);
 
+        ArrayList<ReviewBean> reviewList = getArguments().getParcelableArrayList("reviewList");
+
         groupDetailActivity = (GroupDetailActivity) getActivity();
 
         recyclerview = (RecyclerView) v.findViewById(R.id.recyclerview);
@@ -41,42 +44,18 @@ public class GroupReviewFragment extends Fragment {
         places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
         data.add(places);
 
-        places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);
-
-        places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);places = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "사람B", R.drawable.profile, 3.5);
-        places.invisibleChildren = new ArrayList<>();
-        places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
-        data.add(places);
+        for (int i = 0; i < reviewList.size(); i++) {
+            // TODO 업소 이미지 받아올 수 있나요?
+            ExpandableListAdapter.Item placeTmp = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), R.drawable.profile, Double.valueOf(reviewList.get(i).getAvgRating()));
+            placeTmp.invisibleChildren = new ArrayList<>();
+//            List<PereviewBean> perTmpList = reviewList.get(i).getPereviewList();
+//            int perSize = perTmpList.size();
+//            for (int j = 0; j < perSize; j++) {
+//                PereviewBean perTmp = perTmpList.get(j);
+//                placeTmp.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, perTmp.getPereviewMemName()+":"+perTmp.getPereviewContent(), R.drawable.img06));
+//            }
+            data.add(placeTmp);
+        }
 
         recyclerview.setAdapter(new ExpandableListAdapter(data, groupDetailActivity.getApplicationContext()));
 
