@@ -407,13 +407,24 @@ public class MainActivity extends AppCompatActivity {
 
                     } else if (id == R.id.nav_promotion) {
                         // TODO : 프로모션 이동
-
+                        Intent intent = new Intent(context, PromotionWebViewActivity.class );
+                        startActivity(intent);
+                        finish();
                     } else if (id == R.id.nav_rank) {
                         // TODO : 모임 랭킹 이동
+                        Intent intent = new Intent(context, NoticeWebViewActivity.class );
+                        startActivity(intent);
+                        finish();
                     } else if (id == R.id.nav_inform) {
                         // TODO : 공지 사항 창
+                        Intent intent = new Intent(context, NoticeWebViewActivity.class );
+                        startActivity(intent);
+                        finish();
                     } else if (id == R.id.nav_setting) {
                         // TODO : 환경 설정 창
+                        Intent intent = new Intent(context, NoticeWebViewActivity.class );
+                        startActivity(intent);
+                        finish();
                     }
 
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
