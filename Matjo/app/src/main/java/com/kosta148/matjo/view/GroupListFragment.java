@@ -1,7 +1,6 @@
 package com.kosta148.matjo.view;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -10,11 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -31,12 +27,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.kosta148.matjo.R;
-
 import com.kosta148.matjo.adapter.GroupListAdapter;
-import com.kosta148.matjo.adapter.RestaListAdapter;
 import com.kosta148.matjo.bean.GroupBean;
 import com.kosta148.matjo.bean.ReviewBean;
-import com.kosta148.matjo.data.DaumLocalBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,18 +69,17 @@ public class GroupListFragment extends Fragment {
     AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mainActivity.showToast(groupList.get(position).getGroupName());
-            Intent intent = new Intent();
             GroupBean gBean = groupList.get(position);
-            intent.putExtra("gBean", gBean);
-            startActivity(intent);
-            callGroupDetail("7");
+            mainActivity.showToast(gBean.getGroupNo()+":"+gBean.getGroupName());
+            callGroupDetail(gBean.getGroupNo());
         }
     }; // end of ItemClickListener
 
     public void searchGroup(final String searchText, final int pageNo) {
         this.searchText = searchText;
         this.pageNo = pageNo;
+
+        groupList.clear();
 
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/group/selectGroupListProc.do"
@@ -128,8 +120,10 @@ public class GroupListFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
+                // TODO 필터링에 따라 searchType변경해주기
+                params.put("searchType", "all");
                 params.put("searchText", searchText);
-                params.put("pageNo", pageNo + "");
+                params.put("pageNo", -1+"");
                 return params;
             }
         };
@@ -215,23 +209,4 @@ public class GroupListFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-    private class CallGroupDetailTask extends AsyncTask<String, Void, String> {//Void는 null값을 가진 객체이다. updateBackground 메소를 쓰지 않기 때문에 null값의 객체를 파라미터로 넣어준것!
-
-        private String groupNo;
-
-        public CallGroupDetailTask(String groupNo) {
-            this.groupNo = groupNo;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {//'...'은 배열의 역할을 한다. 무한정으로 값을 추가해 줄 수 있다
-
-            return null;
-        }
-
-        // json 결과값 받아와서 처리해주는 부분
-        @Override
-        protected void onPostExecute(String s) {
-        }
-    }
 }
