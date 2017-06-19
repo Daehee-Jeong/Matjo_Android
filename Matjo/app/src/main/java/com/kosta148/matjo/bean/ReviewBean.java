@@ -50,6 +50,7 @@ public class ReviewBean implements Parcelable{
 		reviewNowMember = in.readString();
 		reviewHasLike = in.readString();
 		avgRating = in.readString();
+		pereviewJSArray = in.readString();
 	}
 
 	@Override
@@ -67,6 +68,7 @@ public class ReviewBean implements Parcelable{
 		dest.writeString(reviewNowMember);
 		dest.writeString(reviewHasLike);
 		dest.writeString(avgRating);
+		dest.writeString(pereviewJSArray);
 	}
 
 	@Override
