@@ -1,11 +1,22 @@
 package com.kosta148.matjo.view;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.service.notification.NotificationListenerService;
+import android.service.notification.StatusBarNotification;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import com.kosta148.matjo.R;
 
@@ -15,30 +26,52 @@ import com.kosta148.matjo.R;
 
 public class SetupActivity extends AppCompatActivity {
     Context context;
-    WebView inquiryView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_promotion);
+        setContentView(R.layout.activity_setup);
         context = getApplicationContext();
 
-        inquiryView = (WebView)findViewById(R.id.promotionWebView);
-        //자바스트립트 사용 셋팅
-        inquiryView.getSettings().setLoadWithOverviewMode(true); // 웹뷰에서 페이지가 확대되는 문제해결
-        inquiryView.getSettings().setUseWideViewPort(true);
-        inquiryView.setInitialScale(1); // 기기별 화면사이트에 맞게 조절
-        inquiryView.setWebViewClient(new SetupActivity.WebViewClientHandler());
-        inquiryView.getSettings().setJavaScriptEnabled(true);
-        inquiryView.loadUrl("http://ldh66210.cafe24.com/rank/selectRankForm.do");
-    }
+        //노티설정
+        final NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setTicker("푸시 테스트")
+                .setContentText("푸시 Text...")
+                .setAutoCancel(true)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
 
-    class WebViewClientHandler extends WebViewClient {
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        }
-        @Override
-        public void onPageFinished(WebView view, String url) {
+        final NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+
+        Switch setupSwitch = (Switch)findViewById(R.id.setup_swich);
+
+        setupSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Toast.makeText(getApplicationContext(), "알림상태="+isChecked,Toast.LENGTH_SHORT).show();
+
+                if(isChecked){
+                    notificationManager.notify((int) System.currentTimeMillis(), notiBuilder.build());
+                }else{
+                    notificationManager.cancelAll();
+                }
+            }
+        });
+
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+        class SimpleKitkatNotificationListener extends NotificationListenerService {
+
+            @Override
+            public void onNotificationPosted(StatusBarNotification sbn) {
+                //..............
+            }
+            @Override
+            public void onNotificationRemoved(StatusBarNotification sbn) {
+                //..............
+            }
         }
     }
-
 }

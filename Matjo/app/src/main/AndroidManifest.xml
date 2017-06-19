@@ -83,6 +83,10 @@
             android:name=".view.PromotionWebViewActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".view.SetupActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
