@@ -11,6 +11,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -35,12 +36,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
+import com.kosta148.matjo.data.DaumLocalBean;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     Handler handler = new Handler();
@@ -66,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHAREDPREFERENCES_LOGIN_ID = "LoginId";
     private static final String SHAREDPREFERENCES_LOGIN_PW = "LoginPassword";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
+    private static final String SHAREDPREFERENCES_TOKEN = "memberToken";
 
     private boolean notiVisiblity = false;
 
@@ -168,7 +192,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (sharedPreferences != null) {
             showToast("로그인 ID: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_ID, "") +
-                    "로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, ""));
+                    "\n로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, "") +
+                    "\n토큰: " + sharedPreferences.getString(SHAREDPREFERENCES_TOKEN, ""));
         }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
