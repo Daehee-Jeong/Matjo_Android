@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     ActionBarDrawerToggle toggle;
     ImageView ivLogo;
     TextView tvLogout;
+    TextView tvUserId;
     NotiFragment notiFragment = new NotiFragment();
     DrawerLayout drawer;
     int pageNo = 1; // 검색 요청 페이지 번호
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHAREDPREFERENCES_LOGIN_ID = "LoginId";
     private static final String SHAREDPREFERENCES_LOGIN_PW = "LoginPassword";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
+    private static final String SHAREDPREFERENCES_MEMBER_NAME = "memberName";
     private static final String SHAREDPREFERENCES_TOKEN = "memberToken";
 
     private boolean notiVisiblity = false;
@@ -168,8 +170,9 @@ public class MainActivity extends AppCompatActivity {
         // xml 상에서 headerLayout 속성을 통해 레이아웃을 불러오고 있는 점을 이용,
         // 네비뷰.getHeaderView(인덱스) ==> 이와 같은 형식으로 뷰를 가져와야 안에있는 id 를 찾을 수 있다.
         tvLogout = (TextView) navigationLeftView.getHeaderView(0).findViewById(R.id.tvLogout);
-        Log.e("아이디", tvLogout + "");
+        tvUserId = (TextView) navigationLeftView.getHeaderView(0).findViewById(R.id.tvUserId);
         tvLogout.setOnClickListener(mClickListener);
+        tvUserId.setText(sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NAME, "")+"님");
 
         fabAnimShrink = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shrink);
         fabAnimInflate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.inflate);

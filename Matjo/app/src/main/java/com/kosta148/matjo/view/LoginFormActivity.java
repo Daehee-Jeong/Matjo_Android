@@ -71,6 +71,7 @@ public class LoginFormActivity extends AppCompatActivity {
     private static final String SHAREDPREFERENCES_LOGIN_ID = "LoginId";
     private static final String SHAREDPREFERENCES_LOGIN_PW = "LoginPassword";
     private static final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
+    private static final String SHAREDPREFERENCES_MEMBER_NAME = "memberName";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
 
     // Handler 객체
@@ -355,6 +356,7 @@ public class LoginFormActivity extends AppCompatActivity {
                     editor.putString(SHAREDPREFERENCES_LOGIN_ID, etId.getText().toString());
                     editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
                     editor.putString(SHAREDPREFERENCES_MEMBER_NO, mBean.getMemberNo());
+                    editor.putString(SHAREDPREFERENCES_MEMBER_NAME, mBean.getMemberName());
                     editor.commit(); // 변경사항을 저장하기
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
