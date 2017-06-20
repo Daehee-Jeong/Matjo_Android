@@ -75,7 +75,7 @@ public class LoginFormActivity extends AppCompatActivity {
     //네이버 로그인 정보
     OAuthLogin mOAuthLoginModule;
 
-    Context context;
+    Activity activity;
 
 
     /**
@@ -110,7 +110,7 @@ public class LoginFormActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginform);
-        context = getApplicationContext();
+        activity = this;
         Log.d("로그확인","1");
         //네이버 로그인 정보 저장
         mOAuthLoginModule = OAuthLogin.getInstance();
@@ -127,7 +127,7 @@ public class LoginFormActivity extends AppCompatActivity {
                 mOAuthLoginButton.setOAuthLoginHandler(mOAuthLoginHandler);
                 mOAuthLoginButton.setBgResourceId(R.drawable.naver_login_icon);
 
-                mOAuthLoginModule.startOauthLoginActivity((Activity) context, mOAuthLoginHandler);
+                mOAuthLoginModule.startOauthLoginActivity(activity, mOAuthLoginHandler);
 
             }
         });
