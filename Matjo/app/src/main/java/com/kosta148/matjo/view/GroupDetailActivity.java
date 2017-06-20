@@ -66,7 +66,11 @@ public class GroupDetailActivity extends AppCompatActivity {
         ArrayList<ReviewBean> reviewList = intent.getParcelableArrayListExtra("reviewList");
 
         Log.d("MyLog", "값 받음 ; "+groupBean.getGroupName());
-        Log.d("MyLog", "review pereview도 잘 들어왔나여 : "+reviewList.get(0).getPereviewJSArray());
+        if (reviewList != null && reviewList.size() > 0) {
+            Log.d("MyLog", "review pereview도 잘 들어왔나여 : " + reviewList.get(0).getPereviewJSArray());
+        } else {
+            Log.d("MyLog", "review가 비어있습니당");
+        }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

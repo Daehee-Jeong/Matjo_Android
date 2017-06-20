@@ -46,6 +46,7 @@ public class NewsFeedFragment extends Fragment {
     List<NewsFeedBean> newsFeedList = new ArrayList<NewsFeedBean>();
     NewsFeedAdapter newsFeedAdapter;
     Handler handler = new Handler();
+    RequestQueue requestQueue;
 
     int pageNo = 1;  // 초기값
     @Override
@@ -72,8 +73,8 @@ public class NewsFeedFragment extends Fragment {
     AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mainActivity.showToast(newsFeedList.get(position).getTypeMsg());
             NewsFeedBean nBean = newsFeedList.get(position);
+            mainActivity.showToast(nBean.getTypeMsg()+"눌렸습니다 ["+nBean.getGroupNo()+"]");
             //TODO : type에 따라 다른 컨트롤러 호출
             if (nBean.getType().equals("1")) { // 모임
                 // 모임
@@ -112,14 +113,14 @@ public class NewsFeedFragment extends Fragment {
      */
     void callNewsFeedList(String pageNoParam) {
         final String pageNo = pageNoParam;
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/newsfeed/selectNewsFeedProc.do"
                 , new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                Log.d("MyLog", "response : " + response);
+                Log.d("MyLog", "NewsFeed response : " + response);
                 final String res = response;
                 // JSON 1차 파싱
                 JsonObject root = new JsonParser().parse(res).getAsJsonObject();
@@ -130,7 +131,7 @@ public class NewsFeedFragment extends Fragment {
                 // 뉴스피드 목록
                 final ArrayList<NewsFeedBean> newsFeedListTmp = gson.fromJson(newsFeedListJSArray.toString(), new TypeToken<ArrayList<NewsFeedBean>>() {}.getType());
 
-                Log.d("MyLog", "send Start");
+                Log.d("MyLog", "send NewsFeed Start");
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -141,7 +142,7 @@ public class NewsFeedFragment extends Fragment {
                         newsFeedAdapter.notifyDataSetChanged();
                     }
                 });
-                Log.e("MyLog", "send Finish");
+                Log.e("MyLog", "send NewsFeed Finish");
             }
         }, new Response.ErrorListener() {
             @Override
@@ -178,14 +179,14 @@ public class NewsFeedFragment extends Fragment {
      */
     void callGroupDetail(String groupNoParam) {
         final String groupNo = groupNoParam;
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+         requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/group/selectGroupDetailProc.do"
                 , new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                Log.d("MyLog", "response : " + response);
+                Log.d("MyLog", "groupDetail response : " + response);
                 final String res = response;
                 // JSON 1차 파싱
                 JsonObject root = new JsonParser().parse(res).getAsJsonObject();
@@ -213,7 +214,7 @@ public class NewsFeedFragment extends Fragment {
 //                    }
                 }
 
-                Log.d("MyLog", "send Start");
+                Log.d("MyLog", "send groupDetail Start");
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -224,7 +225,7 @@ public class NewsFeedFragment extends Fragment {
                         mainActivity.startActivity(intent);
                     }
                 });
-                Log.e("MyLog", "send Finish");
+                Log.e("MyLog", "send groupDetail Finish");
             }
         }, new Response.ErrorListener() {
             @Override
@@ -261,14 +262,14 @@ public class NewsFeedFragment extends Fragment {
      */
     void callRestaDetail(String restaIdParam) {
         final String restaId = restaIdParam;
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+         requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/resta/selectRestaProcDB.do"
                 , new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                Log.d("MyLog", "response : " + response);
+                Log.d("MyLog", "restaDetail response : " + response);
                 final String res = response;
                 // JSON 1차 파싱
                 JsonObject root = new JsonParser().parse(res).getAsJsonObject();
@@ -279,16 +280,17 @@ public class NewsFeedFragment extends Fragment {
                 // 뉴스피드 목록
                 final DaumLocalBean dlBean = gson.fromJson(dlBeanJSObject.toString(), DaumLocalBean.class);
 
-                Log.d("MyLog", "send Start");
+                Log.d("MyLog", "send restaDetail Start");
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         // 성공 시 전송
                         Intent intent = new Intent(getActivity().getApplicationContext(), RestaDetailActivity.class);
                         intent.putExtra("dlBean", dlBean);
+                        mainActivity.startActivity(intent);
                     }
                 });
-                Log.e("MyLog", "send Finish");
+                Log.e("MyLog", "send restaDetail Finish");
             }
         }, new Response.ErrorListener() {
             @Override
