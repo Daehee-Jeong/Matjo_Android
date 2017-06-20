@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +54,14 @@ public class RestaDetailActivity extends AppCompatActivity {
     TabLayout tabLayout;
     DaumLocalBean dlBean;
 
+    // 리뷰등록 버튼
+    Button btnInsertReview;
+
+    // SharedPreferences 선언
+    private SharedPreferences sharedPreferences;
+
+    // SharedPreferences 키 상수
+    private static final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
     // 인텐트에서 받아오는 값들
     String restaId = "";
     String restaTitle = "";
@@ -70,6 +79,17 @@ public class RestaDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resta_detail);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(name);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // 리뷰 등록버튼
+        btnInsertReview = (Button)findViewById(R.id.btnInsertReview);
+
+        // SharedPreferences 초기화
+        sharedPreferences = getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
 
         // 받아온 인텐트 꺼냄
         Intent intent = getIntent();
@@ -162,10 +182,14 @@ public class RestaDetailActivity extends AppCompatActivity {
                 String resultData = rootObj.get("result").getAsString();
                 Log.d("MyLog", "resultData" + resultData);
                 if ("success".equals(resultData)) {
+                    btnInsertReview.setVisibility(View.VISIBLE);
+                    btnInsertReview.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                    finish();
+                        }
+                    });
                 } else {
-
                 }
             }
         }, new Response.ErrorListener() {
@@ -184,7 +208,7 @@ public class RestaDetailActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-//                params.put("groupLeader", );
+                params.put("groupLeader", sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NO, ""));
 
                 return params;
             }

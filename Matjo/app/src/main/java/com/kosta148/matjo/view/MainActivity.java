@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,13 +60,21 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Text;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+<<<<<<< HEAD
 import java.util.HashMap;
+=======
+import java.io.InputStream;
+>>>>>>> 8e514a91145a349b8cc4e61c8ede83d13d4ca194
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
     Handler handler = new Handler();
     Toolbar toolbar;
     SearchView mSearchView;
@@ -117,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+
 
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
