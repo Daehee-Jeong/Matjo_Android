@@ -51,25 +51,15 @@ import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.data.DaumLocalBean;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+
 import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-<<<<<<< HEAD
 import java.util.HashMap;
-=======
 import java.io.InputStream;
->>>>>>> 8e514a91145a349b8cc4e61c8ede83d13d4ca194
 import java.util.List;
 import java.util.Map;
 
@@ -194,6 +184,8 @@ public class MainActivity extends AppCompatActivity {
         fragmentShrink = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shrink_fragment);
         fragmentInflate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.inflate_fragment);
         animFade = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
+
+        sendToken();
 
     } // end of onCreate
 
@@ -517,5 +509,58 @@ public class MainActivity extends AppCompatActivity {
             // 위치 받아오지 못했을 시 처리
         } // try~catch
     } // end of getGeoLocation()
+
+    public void sendToken() {
+        Log.e("TEST", "토큰 보내기 시작");
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/push/updatePushToken.do"
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://192.168.137.1:8080/push/updatePushToken.do"
+                , new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("MyLog", "response : " + response);
+                showToast(response);
+                // 응답을 처리한다.
+
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+                String result = rootObj.get("result").getAsString();
+                String resultMsg = rootObj.get("resultMsg").getAsString();
+
+                Gson gson = new Gson();
+
+                // TODO 파싱
+
+                if ( (result != null) && ("fail".equals(result)) ) {
+                    showToast("null 또는 fail: " + resultMsg);
+                } // 결과 메시지 토스트
+            } // end of onResponse()
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+//                showToast("결과: " + err.getMessage());
+                Log.e("TEST", "에러메시지 : " + err.getMessage());
+
+            } // end of onErrorResponse()
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                String LoginId = sharedPreferences.getString("LoginId", "");
+                String memberToken = sharedPreferences.getString("memberToken", "");
+
+                Map<String, String> params = new HashMap<>();
+                params.put("memberId", LoginId);
+                params.put("memberToken", memberToken);
+                return params;
+            }
+        };
+        Log.e("TEST", "토큰 전송 전");
+        requestQueue.add(stringRequest);
+        Log.e("TEST", "토큰 전송 후");
+        Log.e("TEST", "토큰 보내기 종료");
+    } // end of sendToken
 
 } // end of class

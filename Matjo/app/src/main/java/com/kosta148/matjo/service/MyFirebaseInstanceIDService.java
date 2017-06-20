@@ -52,7 +52,8 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     public void sendToken() {
         Log.e("TEST", "토큰 보내기 시작");
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/push/updatePushToken.do"
+//        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/push/updatePushToken.do"
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://192.168.137.1/push/updatePushToken.do"
                 , new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -86,10 +87,11 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
 
+                String LoginId = sharedPreferences.getString("LoginId", "");
                 String memberToken = sharedPreferences.getString("memberToken", "");
 
                 Map<String, String> params = new HashMap<>();
-                params.put("memberId", "common@.");
+                params.put("memberId", LoginId);
                 params.put("memberToken", memberToken);
                 return params;
             }

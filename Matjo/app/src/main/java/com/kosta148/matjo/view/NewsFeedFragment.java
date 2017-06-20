@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,8 @@ public class NewsFeedFragment extends Fragment {
     NewsFeedAdapter newsFeedAdapter;
     Handler handler = new Handler();
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     int pageNo = 1;  // 초기값
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,6 +56,28 @@ public class NewsFeedFragment extends Fragment {
         pageNo = 1;
         // 초기 리스트
         callNewsFeedList(pageNo+"");
+
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // 작성하세요 ^0^
+
+                handler.postDelayed(new Runnable() { // 러너블은 기냥쓴거임~
+                    @Override
+                    public void run() {
+                       swipeRefreshLayout.setRefreshing(false); // 작업종료되면 얘를 꼭 호출하세요 ^0^
+                    }
+                }, 1000);
+            }
+       });
+        /* 이 코드를 넣으면 한바퀴 돌때마다 이색깔들로 돌아가면서 바뀜~
+        swipeRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light
+        );*/
 
         listView = (ListView) v.findViewById(R.id.listView);
         listView.setOnScrollListener(mOnScrollListener);
