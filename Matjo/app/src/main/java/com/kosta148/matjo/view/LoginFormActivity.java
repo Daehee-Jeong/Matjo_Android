@@ -73,7 +73,6 @@ public class LoginFormActivity extends AppCompatActivity {
     private static final String SHAREDPREFERENCES_LOGIN_NAME = "LoginName";
     private static final String SHAREDPREFERENCES_LOGIN_IMAGE = "LoginImage";
     private static final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
-    private static final String SHAREDPREFERENCES_MEMBER_NAME = "memberName";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
 
     // Handler 객체
@@ -99,10 +98,10 @@ public class LoginFormActivity extends AppCompatActivity {
         @Override
         public void run(boolean success) {
             if (success) {
-                    String accessToken = mOAuthLoginModule.getAccessToken(getApplicationContext());
-                    String refreshToken = mOAuthLoginModule.getRefreshToken(getApplicationContext());
-                    long expiresAt = mOAuthLoginModule.getExpiresAt(getApplicationContext());
-                    String tokenType = mOAuthLoginModule.getTokenType(getApplicationContext());
+                String accessToken = mOAuthLoginModule.getAccessToken(getApplicationContext());
+                String refreshToken = mOAuthLoginModule.getRefreshToken(getApplicationContext());
+                long expiresAt = mOAuthLoginModule.getExpiresAt(getApplicationContext());
+                String tokenType = mOAuthLoginModule.getTokenType(getApplicationContext());
 //                    mOauthAT.setText(accessToken);
 //                    mOauthRT.setText(refreshToken);
 //                    mOauthExpires.setText(String.valueOf(expiresAt));
@@ -198,8 +197,8 @@ public class LoginFormActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
             }
-            email = f_array[0];
-            nickname = f_array[1];
+            email =  f_array[6];
+            nickname = f_array[0];
             profile_image = f_array[3];
 
             insertVolley();
@@ -222,6 +221,7 @@ public class LoginFormActivity extends AppCompatActivity {
                 if ("success".equals(resultData)) {
 
                     SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
                     editor.putString(SHAREDPREFERENCES_LOGIN_ID, email);
                     editor.putString(SHAREDPREFERENCES_LOGIN_NAME, nickname);
                     editor.putString(SHAREDPREFERENCES_LOGIN_IMAGE, profile_image);
@@ -278,6 +278,7 @@ public class LoginFormActivity extends AppCompatActivity {
                 if ("success".equals(resultData)) {
 
                     SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
                     editor.putString(SHAREDPREFERENCES_LOGIN_ID, email);
                     editor.putString(SHAREDPREFERENCES_LOGIN_NAME, nickname);
                     editor.putString(SHAREDPREFERENCES_LOGIN_IMAGE, profile_image);
@@ -449,7 +450,6 @@ public class LoginFormActivity extends AppCompatActivity {
                     editor.putString(SHAREDPREFERENCES_LOGIN_ID, etId.getText().toString());
                     editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
                     editor.putString(SHAREDPREFERENCES_MEMBER_NO, mBean.getMemberNo());
-                    editor.putString(SHAREDPREFERENCES_MEMBER_NAME, mBean.getMemberName());
                     editor.commit(); // 변경사항을 저장하기
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
