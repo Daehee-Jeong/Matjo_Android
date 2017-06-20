@@ -1,9 +1,12 @@
 package com.kosta148.matjo.adapter;
 
 import android.content.Context;
+import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +29,7 @@ public class RestaListAdapter extends BaseAdapter {
     int layout;
     List<DaumLocalBean> restaList;
     LayoutInflater inflater;
+    int lastPosition = Integer.MIN_VALUE;
 
     public RestaListAdapter(Context context, int layout, List<DaumLocalBean> restaList) {
         this.context = context;
@@ -69,10 +73,15 @@ public class RestaListAdapter extends BaseAdapter {
         }
 
         DaumLocalBean dlBean = (DaumLocalBean) getItem(position);
-        Glide.with(context).load(dlBean.getRestaImgUrl()).thumbnail(0.1f).error(R.mipmap.ic_launcher).into(viewHolder.ivRestaImg);
+        Glide.with(context).load(dlBean.getRestaImgUrl()).thumbnail(0.1f).error(R.drawable.ic_no_image_large).into(viewHolder.ivRestaImg);
         viewHolder.tvRestaTitle.setText(dlBean.getRestaTitle());
         viewHolder.tvRestaCate.setText(dlBean.getRestaCate());
         viewHolder.tvRestaAddr.setText(dlBean.getRestaAddr());
+
+//        애니메이션 (notifyDataSetChanged 호출 시 깜빡임의 이슈로 주석처리)
+//        Animation animation = AnimationUtils.loadAnimation(context, (position > this.lastPosition ? R.anim.add_from_bottom : R.anim.add_from_top));
+//        convertView.startAnimation(animation);
+//        lastPosition = position;
         return convertView;
     }
 

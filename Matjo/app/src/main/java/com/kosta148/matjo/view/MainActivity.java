@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -35,6 +37,11 @@ import android.widget.Toast;
 
 import com.kosta148.matjo.R;
 
+import org.w3c.dom.Text;
+
+import java.io.IOException;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     Handler handler = new Handler();
     Toolbar toolbar;
@@ -50,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     NotiFragment notiFragment = new NotiFragment();
     DrawerLayout drawer;
     int pageNo = 1; // 검색 요청 페이지 번호
+    boolean isUseLoc = false;
 
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
@@ -78,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     double LAT_GPS = 0.0f;
     double LON_GPS = 0.0f;
 
+    private Geocoder geocoder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         // LocationManaver 초기화
         lmPassive = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         lmNetwork = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        geocoder = new Geocoder(getApplicationContext());
 
         mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_weather);
         fm = getSupportFragmentManager();
@@ -159,11 +170,6 @@ public class MainActivity extends AppCompatActivity {
             showToast("로그인 ID: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_ID, "") +
                     "로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, ""));
         }
-
-        /**
-         * 위치정보 사용하기 위해 권한 확인한다.
-         */
-        // 위치 관리자 초기화
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -218,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
             // 위치제공자에 의해 위치정보가 변경되었을 때 호출되는 콜백메서드
             LAT_PASSIVE = location.getLatitude();
             LON_PASSIVE = location.getLongitude();
+            setGeoLocation(LAT_PASSIVE, LON_PASSIVE);
         }
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -239,6 +246,8 @@ public class MainActivity extends AppCompatActivity {
             // 위치제공자에 의해 위치정보가 변경되었을 때 호출되는 콜백메서드
             LAT_GPS = location.getLatitude();
             LON_GPS = location.getLongitude();
+
+            setGeoLocation(LAT_GPS, LON_GPS);
         }
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -453,5 +462,25 @@ public class MainActivity extends AppCompatActivity {
             } // end of switch
         } // end of onClick()
     };
+
+    public void setGeoLocation(double lat, double lon) {
+        List<Address> list = null;
+        try {
+            list = geocoder.getFromLocation(lat, lon, 10);
+            if (list != null && (list.size()>=0) ) {
+                Address addr = list.get(0);
+                try {
+                    RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter
+                            .getItem(mainFragment.currentPos);
+                    rlf.tvLocation.setText(addr.getAddressLine(0));
+                    Log.e("TEST", addr.getAddressLine(0));
+                } catch (Exception e) {
+
+                } // try~catch
+            } // end of if
+        } catch (IOException e) {
+            // 위치 받아오지 못했을 시 처리
+        } // try~catch
+    } // end of getGeoLocation()
 
 } // end of class

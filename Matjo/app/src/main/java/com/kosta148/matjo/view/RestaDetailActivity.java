@@ -35,19 +35,42 @@ public class RestaDetailActivity extends AppCompatActivity {
     TabLayout tabLayout;
     DaumLocalBean dlBean;
 
+    // 인텐트에서 받아오는 값들
+    String restaId = "";
+    String restaTitle = "";
+    String restaCate = "";
+    String restaAddr = "";
+    String restaImgUrl = "";
+    String restaLat = "";
+    String restaLng = "";
+    String restaPhone = "";
+    String restaUrl = "";
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resta_detail);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(name);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         // 받아온 인텐트 꺼냄
         Intent intent = getIntent();
         dlBean = (DaumLocalBean) intent.getSerializableExtra("dlBean");
+        restaId = dlBean.getRestaId();
+        restaTitle = dlBean.getRestaTitle();
+        restaCate = dlBean.getRestaCate();
+        restaAddr = dlBean.getRestaAddr();
+        restaImgUrl = dlBean.getRestaImgUrl();
+        restaLat = dlBean.getRestaLat();
+        restaLng = dlBean.getRestaLng();
+        restaPhone = dlBean.getRestaPhone();
+        restaUrl = dlBean.getRestaUrl();
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(restaTitle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         // 기본 UI 컴포넌트 생성
         tvScrollingIndex = (TextView) findViewById(R.id.tvScrollingIndex);
@@ -87,7 +110,7 @@ public class RestaDetailActivity extends AppCompatActivity {
         // 1. 뷰페이저 생성
         viewPagerMain = (ViewPager) findViewById(R.id.viewPagerMain);
         // 2. 어댑터 생성 및 페이저에 등록
-        pagerInRestaDetailAdapter = new PagerInRestaDetailAdapter(getSupportFragmentManager());
+        pagerInRestaDetailAdapter = new PagerInRestaDetailAdapter(getSupportFragmentManager(), dlBean);
         viewPagerMain.setAdapter(pagerInRestaDetailAdapter);
         // 3. 탭 인디케이터 생성 및 페이저에 연결
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabStrip);

@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.kosta148.matjo.R;
+import com.kosta148.matjo.data.DaumLocalBean;
 import com.kosta148.matjo.view.ImageFragment;
 
 /**
@@ -18,7 +20,6 @@ public class PagerInToolBarAdapter extends FragmentStatePagerAdapter {
     Bitmap bitmap;
     /**
      * 툴바 안에 있는 뷰페이저를 위한 어댑터, 어댑터의 생성자.
-     * @param resArr 다량의 데이터 (추후 이미지 URL 경로를 이용하므로 String 배열로 사용한다.
      */
     public PagerInToolBarAdapter(FragmentManager fm, int resArr[]) {
         super(fm);
