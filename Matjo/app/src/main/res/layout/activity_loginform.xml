@@ -86,4 +86,14 @@
         android:layout_marginTop="15dp"
         android:text="비밀번호를 잃어버렸어요" />
 
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        app:srcCompat="@drawable/loginimage"
+        android:layout_marginBottom="40dp"
+        android:layout_above="@+id/etId"
+        android:layout_centerHorizontal="true" />
+
+
 </RelativeLayout>
