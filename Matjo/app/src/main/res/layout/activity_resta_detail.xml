@@ -57,6 +57,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
+
         </android.support.design.widget.CollapsingToolbarLayout>
 
         <!--<android.support.design.widget.TabLayout
@@ -83,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="리뷰작성"/>
+            android:text="리뷰등록"/>
 
     </android.support.design.widget.AppBarLayout>
 

@@ -3,6 +3,7 @@ package com.kosta148.matjo.view;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -52,6 +53,7 @@ public class RestaDetailActivity extends AppCompatActivity {
     TabLayout tabLayout;
     DaumLocalBean dlBean;
 
+    Handler handler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,15 +122,11 @@ public class RestaDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // 모임장 체크
-    // 로그인 서버연동
-    public void checkLeaderVolley(String memberId, String memberPw) {
-        
-        final String mId = memberId;
-        final String mPw = memberPw;
+    // 모임장 조회 서버연동
+    public void checkLeaderVolley() {
 
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/member/selectMemberProc.do", new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/android/checkLeaderProc.do", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 JsonParser parser = new JsonParser();
@@ -143,17 +141,9 @@ public class RestaDetailActivity extends AppCompatActivity {
                 Log.d("MyLog", "resultData" + resultData);
                 if ("success".equals(resultData)) {
 
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
-                    editor.putString(SHAREDPREFERENCES_LOGIN_ID, etId.getText().toString());
-                    editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
-                    editor.commit(); // 변경사항을 저장하기
-
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
                     finish();
                 } else {
-                    showDialog(DIALOG_LOGIN_DIFFERENT);
+
                 }
             }
         }, new Response.ErrorListener() {
@@ -172,8 +162,7 @@ public class RestaDetailActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("memberId", mId);
-                params.put("memberPw", mPw);
+//                params.put("groupLeader", );
 
                 return params;
             }
