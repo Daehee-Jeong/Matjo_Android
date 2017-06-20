@@ -57,6 +57,17 @@
         android:layout_marginTop="40dp"
         android:text="로그인" />
 
+    <com.nhn.android.naverlogin.ui.view.OAuthLoginButton
+        android:id="@+id/buttonOAuthLoginImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnKakaoLogin"
+        android:layout_marginTop="20dp"
+        android:layout_alignLeft="@+id/btnKakaoLogin"
+        android:layout_alignStart="@+id/btnKakaoLogin"
+        android:layout_alignRight="@+id/btnLogin"
+        android:layout_alignEnd="@+id/btnLogin" />
+
     <TextView
         android:id="@+id/tvNotMember"
         android:layout_width="wrap_content"

@@ -1,6 +1,8 @@
 package com.kosta148.matjo.view;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -30,6 +32,12 @@ import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.data.MemberBean;
 
+import com.nhn.android.naverlogin.OAuthLogin;
+import com.nhn.android.naverlogin.OAuthLoginHandler;
+import com.nhn.android.naverlogin.OAuthLoginDefine;
+import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
+
+
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -46,6 +54,7 @@ public class LoginFormActivity extends AppCompatActivity {
     private TextView tvNotMember;
     private TextView tvPasswordFinder;
 
+
     // 다이얼로그 상수
     private static final int DIALOG_LOGIN_DIFFERENT = 1;
 
@@ -61,10 +70,67 @@ public class LoginFormActivity extends AppCompatActivity {
     // Handler 객체
     Handler handler = new Handler();
 
+    //네이버로그인 버튼
+    OAuthLoginButton mOAuthLoginButton;
+    //네이버 로그인 정보
+    OAuthLogin mOAuthLoginModule;
+
+    Context context;
+
+
+    /**
+     * OAuthLoginHandler를 startOAuthLoginActivity() 메서드 호출 시 파라미터로 전달하거나 OAuthLoginButton
+     객체에 등록하면 인증이 종료되는 것을 확인할 수 있습니다.
+     */
+    private OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {
+        @Override
+        public void run(boolean success) {
+            if (success) {
+                String accessToken = mOAuthLoginModule.getAccessToken(getApplicationContext());
+                String refreshToken = mOAuthLoginModule.getRefreshToken(getApplicationContext());
+                long expiresAt = mOAuthLoginModule.getExpiresAt(getApplicationContext());
+                String tokenType = mOAuthLoginModule.getTokenType(getApplicationContext());
+//                mOauthAT.setText(accessToken);
+//                mOauthRT.setText(refreshToken);
+//                mOauthExpires.setText(String.valueOf(expiresAt));
+//                mOauthTokenType.setText(tokenType);
+//                mOAuthState.setText(mOAuthLoginModule.getState(getApplicationContext()).toString());
+            } else {
+                String errorCode = mOAuthLoginModule.getLastErrorCode(getApplicationContext()).getCode();
+                String errorDesc = mOAuthLoginModule.getLastErrorDesc(getApplicationContext());
+                Toast.makeText(getApplicationContext(), "errorCode:" + errorCode
+                        + ", errorDesc:" + errorDesc, Toast.LENGTH_SHORT).show();
+            }
+        };
+    };
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginform);
+        context = getApplicationContext();
+        Log.d("로그확인","1");
+        //네이버 로그인 정보 저장
+        mOAuthLoginModule = OAuthLogin.getInstance();
+        mOAuthLoginModule.init(
+                    getApplicationContext()
+                ,"R_2VTJtZ2pPxEqkyzxXH"
+                ,"R_2VTJtZ2pPxEqkyzxXH"
+                ,"Matjo"
+        );
+        mOAuthLoginButton = (OAuthLoginButton) findViewById(R.id.buttonOAuthLoginImg);
+        mOAuthLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOAuthLoginButton.setOAuthLoginHandler(mOAuthLoginHandler);
+                mOAuthLoginButton.setBgResourceId(R.drawable.naver_login_icon);
+
+                mOAuthLoginModule.startOauthLoginActivity((Activity) context, mOAuthLoginHandler);
+
+            }
+        });
 
         // xml 위젯 초기화
         etId = (EditText) findViewById(R.id.etId);
@@ -206,3 +272,4 @@ public class LoginFormActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 } // end of class
+
