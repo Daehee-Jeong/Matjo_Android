@@ -1,6 +1,7 @@
 package com.kosta148.matjo.view;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,7 +53,8 @@ public class RestaListFragment extends Fragment {
     int pageNo = 1;
     String searchText = "";
     TextView tvLocation;
-    boolean isUseLoc = false;
+    TextView btnUseLoc;
+    boolean isUseLoc = true;
 
     String location = "";
 
@@ -64,17 +66,26 @@ public class RestaListFragment extends Fragment {
 
         LayoutInflater li = mainActivity.getLayoutInflater();
         RelativeLayout headerView = (RelativeLayout)li.inflate(R.layout.header_resta_list, null); // 레이아웃에 맞게!
+        btnUseLoc = (TextView) headerView.findViewById(R.id.btnUseLoc);
         tvLocation = (TextView) headerView.findViewById(R.id.tvLocation);
-        tvLocation.setOnClickListener(new View.OnClickListener() {
+        btnUseLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isUseLoc) {
+                    btnUseLoc.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    btnUseLoc.setBackground(getResources().getDrawable(R.drawable.rounded_orange));
+                    isUseLoc = true;
+                } else {
+                    btnUseLoc.setTextColor(Color.GRAY);
+                    btnUseLoc.setBackground(getResources().getDrawable(R.drawable.rounded_gray));
+                    isUseLoc = false;
                 }
             }
         });
 
         listView = (ListView) v.findViewById(R.id.listView);
-        listView.addHeaderView(headerView, null, false);
+//        listView.addHeaderView(headerView, null, false);
+        listView.addHeaderView(headerView);
         listView.setOnScrollListener(mOnScrollListener);
         listView.setOnItemClickListener(mOnItemClickListener);
         restaListAdapter = new RestaListAdapter(getActivity().getApplicationContext(),
@@ -113,10 +124,66 @@ public class RestaListFragment extends Fragment {
             //OnScrollListener.SCROLL_STATE_IDLE은 스크롤이 이동하다가 멈추었을때 발생되는 스크롤 상태
             //즉 스크롤이 바닦에 닿아 멈춘 상태에 처리를 하겠다는 뜻
             if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag) { // '리스트의 마지막에' + '멈췄다'
-                searchResta(searchText, ++pageNo, location); // 데이터 추가 요청
+                if (isUseLoc) searchResta(searchText, ++pageNo, location); // 데이터 추가 요청
+                else searchResta(searchText, ++pageNo);
             }
         }
     }; // end of OnScrollListener
+
+    public void searchResta(final String searchText, final int pageNo) {
+        this.searchText = searchText;
+        this.pageNo = pageNo;
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/resta/selectRestaListProc.do"
+                , new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("MyLog", "response : " + response);
+//                    mainActivity.showToast(response);
+                // 응답을 처리한다.
+
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+                JsonArray list = rootObj.getAsJsonArray("list");
+                String result = rootObj.get("result").getAsString();
+                String resultMsg = rootObj.get("resultMsg").getAsString();
+
+                Gson gson = new Gson();
+                if (list != null && (list.size() > 0) ) {
+                    for (int i = 0; i < list.size(); i++) {
+                        DaumLocalBean dlBean = gson.fromJson(list.get(i), DaumLocalBean.class);
+                        restaList.add(dlBean);
+                    } // end of for
+                    restaListAdapter.notifyDataSetChanged();
+                }
+                if ( (result != null) && ("fail".equals(result)) ) {
+                    if (pageNo >= 3) {
+                        mainActivity.showToast("데이터를 모두 불러왔습니다.");
+                    } else {
+                        mainActivity.showToast(resultMsg);
+                    }
+                } // 결과 메시지 토스트
+            } // end of onResponse()
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                mainActivity.showToast(err.getMessage());
+
+            } // end of onErrorResponse()
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("searchText", searchText);
+                params.put("pageNo", pageNo + "");
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
 
     public void searchResta(final String searchText, final int pageNo, final String location) {
         this.searchText = searchText;
@@ -168,9 +235,7 @@ public class RestaListFragment extends Fragment {
                 Map<String, String> params = new HashMap<>();
                 params.put("searchText", searchText);
                 params.put("pageNo", pageNo + "");
-                if (!"0.0f,0.0f".equals(location) && !"0.0,0.0".equals(location) && !"".equals(location)) {
-                    params.put("location", location);
-                }
+                params.put("location", location);
                 return params;
             }
         };

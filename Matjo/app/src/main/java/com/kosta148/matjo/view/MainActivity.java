@@ -276,7 +276,6 @@ public class MainActivity extends AppCompatActivity {
             LON_PASSIVE = location.getLongitude();
             setGeoLocation(LAT_PASSIVE, LON_PASSIVE);
             Log.e("TEST", "PASSIVE - " + LAT_PASSIVE + ", " + LON_PASSIVE);
-
             if (!autoSearched) {
                 if (LAT_NET != 0.0f) {
                     RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter.getItem(1);
@@ -288,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
                     autoSearched = true;
                 }
             } // 최초로 위치값 받아왔을때 그값에 기반해 '맛집' 키워드를 검색한다.
+
         }
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -433,7 +433,9 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     // 맛집 검색시 RestaListFragment로 query 값을 넘긴다
                     RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
-                    rlf.searchResta(searchText, 1, "");
+                    rlf.restaList.clear();
+                    if (rlf.isUseLoc) rlf.searchResta(searchText, 1, LAT_NET+","+LON_NET);
+                    else rlf.searchResta(searchText, 1);
                     break;
                 case 2:
                     GroupListFragment glf = (GroupListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
@@ -532,14 +534,10 @@ public class MainActivity extends AppCompatActivity {
             list = geocoder.getFromLocation(lat, lon, 10);
             if (list != null && (list.size()>=0) ) {
                 Address addr = list.get(0);
-                try {
                     RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter
-                            .getItem(mainFragment.currentPos);
+                            .getItem(1);
                     rlf.tvLocation.setText(addr.getAddressLine(0));
                     Log.e("TEST", addr.getAddressLine(0));
-                } catch (Exception e) {
-
-                } // try~catch
             } // end of if
         } catch (IOException e) {
             // 위치 받아오지 못했을 시 처리
