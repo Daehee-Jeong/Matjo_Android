@@ -1,6 +1,7 @@
 package com.kosta148.matjo.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -36,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by Daehee on 2017-04-26.
  */
@@ -50,6 +53,10 @@ public class GroupListFragment extends Fragment {
     int pageNo = 1;
     String searchText = "";
 
+    // SharedPreferences
+    private SharedPreferences sharedPreferences;
+    private final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v;
@@ -62,6 +69,11 @@ public class GroupListFragment extends Fragment {
                                                     R.layout.item_group_list,
                                                     groupList);
         gridView.setAdapter(groupListAdapter);
+
+
+        sharedPreferences = getActivity().getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
+        String memberNo = sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NO, "");
+        callMyGroup(memberNo);
 
         return v;
     } // end of onCreateView
@@ -197,6 +209,72 @@ public class GroupListFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("groupNo", groupNo);
+                return params;
+            }
+        };
+        // 재 호출 설정
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 5,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        requestQueue.add(stringRequest);
+    }
+
+    void callMyGroup(String memberNoParam) {
+        // 내 모임 불러오기 전에 기존 리스트 초기화
+        groupList.clear();
+
+        final String memberNo = memberNoParam;
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/group/selectMemberGroupProc.do"
+                , new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("MyLog", "response : " + response);
+                final String res = response;
+                // JSON 1차 파싱
+                JsonObject root = new JsonParser().parse(res).getAsJsonObject();
+                // 내 모임 목록
+                JsonArray groupListJSArray = root.get("groupList").getAsJsonArray();
+                Gson gson = new Gson();
+
+                // 내 모임 목록
+                final ArrayList<GroupBean> groupListTmp = gson.fromJson(groupListJSArray.toString(), new TypeToken<ArrayList<GroupBean>>() {
+                }.getType());
+
+                Log.d("MyLog", "send Start");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 성공 시 그리드뷰에 값 추가
+                        for (int i = 0; i < groupListTmp.size(); i++) {
+                            groupList.add(groupListTmp.get(i));
+                        }
+                        groupListAdapter.notifyDataSetChanged();
+                    }
+                });
+                Log.e("MyLog", "send Finish");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity().getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberNo", memberNo);
                 return params;
             }
         };
