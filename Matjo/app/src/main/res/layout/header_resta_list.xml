@@ -14,7 +14,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="3dp"
-        android:text="현재 위치"/>
+        android:text="현재위치를 불러오는 중입니다."/>
 
     <TextView
         android:id="@+id/btnUseLoc"

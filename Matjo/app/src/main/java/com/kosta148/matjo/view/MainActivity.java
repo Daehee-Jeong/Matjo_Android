@@ -19,6 +19,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     int pageNo = 1; // 검색 요청 페이지 번호
     boolean isUseLoc = false;
 
+    boolean autoSearched = false;
+
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
 
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHAREDPREFERENCES_LOGIN_PW = "LoginPassword";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
     private static final String SHAREDPREFERENCES_TOKEN = "memberToken";
+
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private boolean notiVisiblity = false;
 
@@ -98,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
     double LAT_PASSIVE = 0.0f;
     double LON_PASSIVE = 0.0f;
-    double LAT_GPS = 0.0f;
-    double LON_GPS = 0.0f;
+    double LAT_NET = 0.0f;
+    double LON_NET = 0.0f;
 
     private Geocoder geocoder;
 
@@ -113,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
 
-        // LocationManaver 초기화
+        // LocationManager 초기화
         lmPassive = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         lmNetwork = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         geocoder = new Geocoder(getApplicationContext());
@@ -177,38 +182,61 @@ public class MainActivity extends AppCompatActivity {
         fragmentInflate = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.inflate_fragment);
         animFade = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
 
-        sendToken();
-
-    } // end of onCreate
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         if (sharedPreferences != null) {
             showToast("로그인 ID: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_ID, "") +
                     "\n로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, "") +
                     "\n토큰: " + sharedPreferences.getString(SHAREDPREFERENCES_TOKEN, ""));
         }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+
+        sendToken();
+    } // end of onCreate
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 권한 체크
+        if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+
+            // 이 권한을 필요한 이유를 설명해야하는가?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // 다이어로그같은것을 띄워서 사용자에게 해당 권한이 필요한 이유에 대해 설명합니다
+                // 해당 설명이 끝난뒤 requestPermissions()함수를 호출하여 권한허가를 요청해야 합니다
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+                // 필요한 권한과 요청 코드를 넣어서 권한허가요청에 대한 결과를 받아야 합니다
+            }
+        } else {
+            // 위치제공자 리스너등록
+            lmPassive.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
+                    0,
+                    0,
+                    locationListenerPassive);
+            lmNetwork.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    0,
+                    0,
+                    locationListenerNetwork);
         }
-        lmPassive.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,
-                0,
-                0,
-                locationListenerPassive);
-        lmNetwork.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                0,
-                0,
-                locationListenerNetwork);
 
     } // end of onResume
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // 권한 허가
+//                    // 해당 권한을 사용해서 작업을 진행할 수 있습니다
+//                } else {
+//                    // 권한 거부
+//                    // 사용자가 해당권한을 거부했을때 해주어야 할 동작을 수행합니다
+//                    showToast("위치 기반 검색기능을 이용하실 수 없습니다");
+//                }
+//                return;
+//        } // end of switch
+//    } // end of onRequestPermissionsResult()
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -244,6 +272,19 @@ public class MainActivity extends AppCompatActivity {
             LAT_PASSIVE = location.getLatitude();
             LON_PASSIVE = location.getLongitude();
             setGeoLocation(LAT_PASSIVE, LON_PASSIVE);
+            Log.e("TEST", "PASSIVE - " + LAT_PASSIVE + ", " + LON_PASSIVE);
+
+            if (!autoSearched) {
+                if (LAT_NET != 0.0f) {
+                    RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter.getItem(1);
+                    rlf.searchResta("맛집", 1, LAT_NET + "," + LON_NET);
+                    autoSearched = true;
+                } else {
+                    RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter.getItem(1);
+                    rlf.searchResta("맛집", 1, LAT_PASSIVE + "," + LON_PASSIVE);
+                    autoSearched = true;
+                }
+            } // 최초로 위치값 받아왔을때 그값에 기반해 '맛집' 키워드를 검색한다.
         }
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -263,10 +304,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationChanged(Location location) {
             // 위치제공자에 의해 위치정보가 변경되었을 때 호출되는 콜백메서드
-            LAT_GPS = location.getLatitude();
-            LON_GPS = location.getLongitude();
-
-            setGeoLocation(LAT_GPS, LON_GPS);
+            LAT_NET = location.getLatitude();
+            LON_NET = location.getLongitude();
+            setGeoLocation(LAT_NET, LON_NET);
+            Log.e("TEST", "NETWORK - " + LAT_NET + ", " + LON_NET);
         }
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -389,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     // 맛집 검색시 RestaListFragment로 query 값을 넘긴다
                     RestaListFragment rlf = (RestaListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
-                    rlf.searchResta(searchText, 1);
+                    rlf.searchResta(searchText, 1, "");
                     break;
                 case 2:
                     GroupListFragment glf = (GroupListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
@@ -505,8 +546,7 @@ public class MainActivity extends AppCompatActivity {
     public void sendToken() {
         Log.e("TEST", "토큰 보내기 시작");
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/push/updatePushToken.do"
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://192.168.137.1:8080/push/updatePushToken.do"
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/push/updatePushToken.do"
                 , new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

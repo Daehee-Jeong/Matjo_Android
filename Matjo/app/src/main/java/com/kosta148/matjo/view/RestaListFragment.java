@@ -54,6 +54,8 @@ public class RestaListFragment extends Fragment {
     TextView tvLocation;
     boolean isUseLoc = false;
 
+    String location = "";
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v;
@@ -111,14 +113,15 @@ public class RestaListFragment extends Fragment {
             //OnScrollListener.SCROLL_STATE_IDLE은 스크롤이 이동하다가 멈추었을때 발생되는 스크롤 상태
             //즉 스크롤이 바닦에 닿아 멈춘 상태에 처리를 하겠다는 뜻
             if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag) { // '리스트의 마지막에' + '멈췄다'
-                searchResta(searchText, ++pageNo); // 데이터 추가 요청
+                searchResta(searchText, ++pageNo, location); // 데이터 추가 요청
             }
         }
     }; // end of OnScrollListener
 
-    public void searchResta(final String searchText, final int pageNo) {
+    public void searchResta(final String searchText, final int pageNo, final String location) {
         this.searchText = searchText;
         this.pageNo = pageNo;
+        this.location = location;
 
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/resta/selectRestaListProc.do"
@@ -165,45 +168,12 @@ public class RestaListFragment extends Fragment {
                 Map<String, String> params = new HashMap<>();
                 params.put("searchText", searchText);
                 params.put("pageNo", pageNo + "");
+                if (!"0.0f,0.0f".equals(location) && !"0.0,0.0".equals(location) && !"".equals(location)) {
+                    params.put("location", location);
+                }
                 return params;
             }
         };
         requestQueue.add(stringRequest);
     }
-
-    class SearchRestaTask extends AsyncTask<String, Void, String> {
-        String searchText;
-        int pageNo;
-
-        SearchRestaTask(String searchText, int pageNo) {
-            this.searchText = searchText;
-            this.pageNo = pageNo;
-        }
-
-        /**
-         * doInBackground 실행되기 이전에 동작한다.
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        /**
-         * 본 작업을 쓰레드로 처리해준다. * @param params * @return
-         */
-        @Override
-        protected String doInBackground(String... params) {
-
-            String result = "false";
-
-
-            return null;
-        } // end of doInBackground
-
-        @Override
-        protected void onPostExecute(String s) {
-
-            super.onPostExecute(s);
-        }
-    } // end of NetworkTask
 } // end of class
