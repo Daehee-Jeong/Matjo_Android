@@ -272,9 +272,11 @@ public class RestaDetailActivity extends AppCompatActivity {
 
                 Gson gson = new Gson();
                 JsonArray list = rootObj.getAsJsonArray("list");
-                for (int i = 0; i < list.size(); i++) {
-                    GroupBean gBean = gson.fromJson(list.get(i), GroupBean.class);
-                    groupList.add(gBean);
+                if (list != null && list.size() > 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        GroupBean gBean = gson.fromJson(list.get(i), GroupBean.class);
+                        groupList.add(gBean);
+                    }
                 }
 
                 String resultData = rootObj.get("result").getAsString();

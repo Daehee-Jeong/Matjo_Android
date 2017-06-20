@@ -20,11 +20,12 @@
         android:id="@+id/btnUseLoc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@layout/rounded_gray"
+        android:background="@drawable/rounded_orange"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="10dp"
         android:textSize="10sp"
+        android:textColor="#ff3d00"
         android:padding="5dp"
         android:text="위치 기반"/>
 
