@@ -68,12 +68,12 @@ public class NewsFeedAdapter extends BaseAdapter {
         NewsFeedBean nBean = (NewsFeedBean) getItem(position);
         String type = nBean.getType();
         if (type.equals("1")) { //모임
-            Glide.with(context).load("http://ldh66210.cafe24.com/upload/ic_group.png").thumbnail(0.1f).error(R.mipmap.ic_launcher).into(viewHolder.ivNewsImg);
+            Glide.with(context).load("http://ldh66210.cafe24.com/upload/"+nBean.getImgPath()).thumbnail(0.1f).error(R.drawable.ic_group).into(viewHolder.ivNewsImg);
             viewHolder.tvNewsTitle.setText("["+nBean.getGroupName()+"] 모임이 등록되었습니다");
             viewHolder.tvNewsCate.setText(nBean.getRegDate());
             viewHolder.tvNewsAddr.setText("모임장 | "+nBean.getGroupLeader());
         } else { // 리뷰 등록
-            Glide.with(context).load("http://ldh66210.cafe24.com/upload/ic_resta.png").thumbnail(0.1f).error(R.mipmap.ic_launcher).into(viewHolder.ivNewsImg);
+            Glide.with(context).load(nBean.getImgPath()).thumbnail(0.1f).error(R.drawable.ic_resta).into(viewHolder.ivNewsImg);
             viewHolder.tvNewsTitle.setText("["+nBean.getRestaName()+"]의 리뷰가 등록되었습니다");
             viewHolder.tvNewsCate.setText(nBean.getRegDate());
             viewHolder.tvNewsAddr.setText(nBean.getRestaCate());
