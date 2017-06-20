@@ -1,6 +1,7 @@
 package com.kosta148.matjo.view;
 
 import android.content.Intent;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +51,8 @@ public class RestaListFragment extends Fragment {
     RestaListAdapter restaListAdapter;
     int pageNo = 1;
     String searchText = "";
-
+    TextView tvLocation;
+    boolean isUseLoc = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,7 +60,19 @@ public class RestaListFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_resta_list, container, false);
         mainActivity = (MainActivity) getActivity();
 
+        LayoutInflater li = mainActivity.getLayoutInflater();
+        RelativeLayout headerView = (RelativeLayout)li.inflate(R.layout.header_resta_list, null); // 레이아웃에 맞게!
+        tvLocation = (TextView) headerView.findViewById(R.id.tvLocation);
+        tvLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isUseLoc) {
+                }
+            }
+        });
+
         listView = (ListView) v.findViewById(R.id.listView);
+        listView.addHeaderView(headerView, null, false);
         listView.setOnScrollListener(mOnScrollListener);
         listView.setOnItemClickListener(mOnItemClickListener);
         restaListAdapter = new RestaListAdapter(getActivity().getApplicationContext(),
@@ -70,9 +86,12 @@ public class RestaListFragment extends Fragment {
     AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mainActivity.showToast(restaList.get(position).getRestaTitle());
+            if (view.getId() == R.id.headerLayout) { // 헤더뷰 클릭시 무효화
+                return;
+            }
+            mainActivity.showToast(restaList.get(position-1).getRestaTitle());
             Intent intent = new Intent(getActivity().getApplicationContext(), RestaDetailActivity.class);
-            DaumLocalBean dlBean = restaList.get(position);
+            DaumLocalBean dlBean = restaList.get(position-1); // headerView 의 추가로 1을 빼주어야 한다.
             intent.putExtra("dlBean", dlBean);
             startActivity(intent);
         }

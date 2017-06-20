@@ -10,40 +10,100 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@android:color/white">
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 1 (간략)"/>
+                android:text="음식점 번호"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvRestaId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="8dp"
+                android:text="음식점 번호"
+                android:textColor="#000"
+                android:textSize="18sp" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:tag="간선"/>
+            android:tag="간선" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="카테고리"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvRestaCate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="8dp"
+                android:text="카테고리"
+                android:textColor="#000"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:tag="간선" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@android:color/white">
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 2 (코멘트, 소개)"/>
+                android:text="위치"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvRestaAddr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="위치"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:tag="간선"/>
+            android:tag="간선" />
 
+        <!-- 지도 -->
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
@@ -56,73 +116,79 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:tag="간선"/>
+            android:tag="간선" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@android:color/white">
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 3 (메뉴 정보)"/>
+                android:text="전화번호"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvRestaPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="전화번호"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:tag="간선"/>
+            android:tag="간선" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@android:color/white">
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 4 (업소 내부 정보)"/>
+                android:text="홈페이지 주소"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvRestaUrl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="홈페이지 주소"
+                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            android:tag="간선"/>
+            android:tag="간선" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@android:color/white">
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 5"/>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:tag="간선"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@android:color/white">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
-                android:textSize="16sp"
-                android:text="정보 6"/>
+                android:text="정보 6"
+                android:textSize="16sp" />
         </LinearLayout>
 
     </LinearLayout>

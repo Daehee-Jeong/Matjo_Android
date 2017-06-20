@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:layout_width="match_parent"
+    android:clickable="false"
+    android:id="@+id/headerLayout"
+    android:layout_height="32dp">
+
+    <TextView
+        android:id="@+id/tvLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="3dp"
+        android:text="현재 위치"/>
+
+    <TextView
+        android:id="@+id/btnUseLoc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@layout/rounded_gray"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
+        android:textSize="10sp"
+        android:padding="5dp"
+        android:text="위치 기반"/>
+
+</RelativeLayout>
