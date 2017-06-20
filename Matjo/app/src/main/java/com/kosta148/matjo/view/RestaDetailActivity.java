@@ -1,21 +1,38 @@
 package com.kosta148.matjo.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.astuetz.PagerSlidingTabStrip;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
 import com.kosta148.matjo.adapter.PagerInRestaDetailAdapter;
 import com.kosta148.matjo.data.DaumLocalBean;
+import com.kosta148.matjo.data.MemberBean;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RestaDetailActivity extends AppCompatActivity {
     // 본 액티비티의 호출부에서 인텐트를 통해 업소명, 사진경로 배열등을 보내주는 식으로 작업하면 된다.
@@ -101,5 +118,66 @@ public class RestaDetailActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // 모임장 체크
+    // 로그인 서버연동
+    public void checkLeaderVolley(String memberId, String memberPw) {
+        
+        final String mId = memberId;
+        final String mPw = memberPw;
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/member/selectMemberProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+                JsonObject mBeanJsonObj = rootObj.getAsJsonObject("mBean");
+                String mBeanStr = gson.toJson(mBeanJsonObj);
+                MemberBean mBean = gson.fromJson(mBeanStr, MemberBean.class);
+
+                String resultData = rootObj.get("result").getAsString();
+                Log.d("MyLog", "resultData" + resultData);
+                if ("success".equals(resultData)) {
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
+                    editor.putString(SHAREDPREFERENCES_LOGIN_ID, etId.getText().toString());
+                    editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
+                    editor.commit(); // 변경사항을 저장하기
+
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    showDialog(DIALOG_LOGIN_DIFFERENT);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberId", mId);
+                params.put("memberPw", mPw);
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
     }
 } // end of class
