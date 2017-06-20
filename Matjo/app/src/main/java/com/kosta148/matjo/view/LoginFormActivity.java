@@ -197,9 +197,12 @@ public class LoginFormActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
             }
-            email =  f_array[0];
-            nickname = f_array[6];
+            email =  f_array[7];
+            nickname = f_array[0];
             profile_image = f_array[2];
+            Log.d("로그인정보입니다", f_array[0]);
+            Log.d("로그인정보입니다", f_array[1]);
+            Log.d("로그인정보입니다", f_array[7]);
 
 
             insertVolley();
