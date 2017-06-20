@@ -1,5 +1,8 @@
 package com.kosta148.matjo.view;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,12 +10,17 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,14 +33,16 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.astuetz.PagerSlidingTabStrip;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
 import com.kosta148.matjo.adapter.PagerInRestaDetailAdapter;
+import com.kosta148.matjo.bean.GroupBean;
 import com.kosta148.matjo.data.DaumLocalBean;
-import com.kosta148.matjo.data.MemberBean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,8 +67,18 @@ public class RestaDetailActivity extends AppCompatActivity {
     // 리뷰등록 버튼
     Button btnInsertReview;
 
+    // 모임장의 모임리스트
+    ArrayList<GroupBean> groupList;
+
+    // 다이얼로그 상수
+    private static final int DIALOG_SHOW_REVIEW = 1;
+    private static final int DIALOG_INSERT_REVIEW = 2;
+
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
+
+    // selectedGroupNo
+    private String seletedGroupNo;
 
     // SharedPreferences 키 상수
     private static final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
@@ -88,6 +108,12 @@ public class RestaDetailActivity extends AppCompatActivity {
         // 리뷰 등록버튼
         btnInsertReview = (Button)findViewById(R.id.btnInsertReview);
 
+        btnInsertReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(DIALOG_SHOW_REVIEW);
+            }
+        });
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
 
@@ -108,7 +134,6 @@ public class RestaDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(restaTitle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         // 기본 UI 컴포넌트 생성
         tvScrollingIndex = (TextView) findViewById(R.id.tvScrollingIndex);
@@ -154,6 +179,8 @@ public class RestaDetailActivity extends AppCompatActivity {
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabStrip);
         tabStrip.setViewPager(viewPagerMain);
 
+        // 모임장에 따라 리뷰버튼 체크
+        checkLeaderVolley();
     } // end of onCreate
 
     @Override
@@ -163,6 +190,73 @@ public class RestaDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    // 다이얼로그 onCreate
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DIALOG_SHOW_REVIEW:
+                AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
+                LayoutInflater lif = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View view = lif.inflate(R.layout.dialog_insertreview, null);
+
+                final Spinner spinnerGroup = (Spinner) view.findViewById(R.id.spinnerGroup);
+
+                ArrayList<String> groupArrayList = new ArrayList<String>();
+                for (int i = 0; i < groupList.size(); i++) {
+                    groupArrayList.add(groupList.get(i).getGroupName());
+                }
+
+                ArrayAdapter<String> adapterGroup = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, groupArrayList);
+                //스피너 속성
+                spinnerGroup.setAdapter(adapterGroup);
+
+                spinnerGroup.setSelection(0);
+                spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        spinnerGroup.setSelection(position);
+                        seletedGroupNo = groupList.get(position).getGroupNo();
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+                dialog1.setTitle("리뷰 등록");
+                dialog1.setView(view);
+                dialog1.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        insertRestaVolley();
+                        insertReviewVolley();
+                        showDialog(DIALOG_INSERT_REVIEW);
+                    }
+                });
+                dialog1.setNegativeButton("아니요", null);
+                return dialog1.create();
+            case DIALOG_INSERT_REVIEW:
+                AlertDialog.Builder dialog2 = new AlertDialog.Builder(this);
+                dialog2.setTitle("리뷰 등록 완료");
+                dialog2.setMessage("리뷰가 정상적으로 등록되었습니다.\n모임상세 화면에서 확인해주세요");
+                dialog2.setPositiveButton("확인", null);
+
+                return dialog2.create();
+            default:
+                break;
+        }
+        return null;
+    } // end of onCreateDialog
+
+    // 다이얼로그 onPrepareDialog
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        super.onPrepareDialog(id, dialog);
+        switch (id) {
+            case DIALOG_SHOW_REVIEW:
+                break;
+        }
+    } // end of onPrepareDialog
 
     // 모임장 조회 서버연동
     public void checkLeaderVolley() {
@@ -171,24 +265,21 @@ public class RestaDetailActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/android/checkLeaderProc.do", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                groupList = new ArrayList<>();
+
                 JsonParser parser = new JsonParser();
                 JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
 
                 Gson gson = new Gson();
-                JsonObject mBeanJsonObj = rootObj.getAsJsonObject("mBean");
-                String mBeanStr = gson.toJson(mBeanJsonObj);
-                MemberBean mBean = gson.fromJson(mBeanStr, MemberBean.class);
+                JsonArray list = rootObj.getAsJsonArray("list");
+                for (int i = 0; i < list.size(); i++) {
+                    GroupBean gBean = gson.fromJson(list.get(i), GroupBean.class);
+                    groupList.add(gBean);
+                }
 
                 String resultData = rootObj.get("result").getAsString();
-                Log.d("MyLog", "resultData" + resultData);
                 if ("success".equals(resultData)) {
                     btnInsertReview.setVisibility(View.VISIBLE);
-                    btnInsertReview.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                        }
-                    });
                 } else {
                 }
             }
@@ -209,6 +300,103 @@ public class RestaDetailActivity extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("groupLeader", sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NO, ""));
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+
+    // 리뷰 등록 서버연동
+    public void insertReviewVolley() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/review/insertReviewProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                groupList = new ArrayList<>();
+
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+                    showDialog(DIALOG_INSERT_REVIEW);
+                } else {
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("reviewGroupNo", seletedGroupNo);
+                params.put("reviewRestaNo", restaId);
+                params.put("reviewRestaName", restaTitle);
+                params.put("reviewRestaCate", restaCate);
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+
+    // 맛집 등록 서버연동
+    public void insertRestaVolley() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/resta/insertRestaProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                groupList = new ArrayList<>();
+
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+
+                } else {
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("restaId", restaId);
+                params.put("restaTitle", restaTitle);
+                params.put("restaCate", restaCate);
+                params.put("restaAddr", restaAddr);
+                params.put("restaImgUrl", restaImgUrl);
+                params.put("restaLat", restaLat);
+                params.put("restaLng", restaLng);
+                params.put("restaPhone", restaPhone);
+                params.put("restaUrl", restaUrl);
 
                 return params;
             }
