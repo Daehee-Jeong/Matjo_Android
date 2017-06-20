@@ -78,7 +78,7 @@ public class RestaurantReviewFragment extends Fragment {
         places.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getResources().getString(R.string.long_text), R.drawable.img06));
         data.add(places);
 
-        recyclerview.setAdapter(new ExpandableListAdapter(data, restaDetailActivity.getApplicationContext()));
+        recyclerview.setAdapter(new ExpandableListAdapter(data, restaDetailActivity.getApplicationContext(), false));
 
         return v;
     } // end of onCreateView

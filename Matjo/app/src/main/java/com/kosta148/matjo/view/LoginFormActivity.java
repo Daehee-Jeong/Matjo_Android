@@ -70,6 +70,8 @@ public class LoginFormActivity extends AppCompatActivity {
     // SharedPreferences 키 상수
     private static final String SHAREDPREFERENCES_LOGIN_ID = "LoginId";
     private static final String SHAREDPREFERENCES_LOGIN_PW = "LoginPassword";
+    private static final String SHAREDPREFERENCES_LOGIN_NAME = "LoginName";
+    private static final String SHAREDPREFERENCES_LOGIN_IMAGE = "LoginImage";
     private static final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
 
@@ -86,7 +88,7 @@ public class LoginFormActivity extends AppCompatActivity {
     //네이버로그인 정보 저장할 변수
     String email = "";
     String nickname = "";
-
+    String profile_image = "";
 
     /**
      * OAuthLoginHandler를 startOAuthLoginActivity() 메서드 호출 시 파라미터로 전달하거나 OAuthLoginButton
@@ -96,10 +98,10 @@ public class LoginFormActivity extends AppCompatActivity {
         @Override
         public void run(boolean success) {
             if (success) {
-                    String accessToken = mOAuthLoginModule.getAccessToken(getApplicationContext());
-                    String refreshToken = mOAuthLoginModule.getRefreshToken(getApplicationContext());
-                    long expiresAt = mOAuthLoginModule.getExpiresAt(getApplicationContext());
-                    String tokenType = mOAuthLoginModule.getTokenType(getApplicationContext());
+                String accessToken = mOAuthLoginModule.getAccessToken(getApplicationContext());
+                String refreshToken = mOAuthLoginModule.getRefreshToken(getApplicationContext());
+                long expiresAt = mOAuthLoginModule.getExpiresAt(getApplicationContext());
+                String tokenType = mOAuthLoginModule.getTokenType(getApplicationContext());
 //                    mOauthAT.setText(accessToken);
 //                    mOauthRT.setText(refreshToken);
 //                    mOauthExpires.setText(String.valueOf(expiresAt));
@@ -135,7 +137,7 @@ public class LoginFormActivity extends AppCompatActivity {
 
             if (email == null) {
                 Toast.makeText(activity,
-                        "로그인 실패하였습니다.  잠시후 다시 시도해 주세요!!", Toast.LENGTH_SHORT)
+                        "로그인 실패하였습니다.  잠시후 다시 시도해 주세요", Toast.LENGTH_SHORT)
                         .show();
             } else {
             }
@@ -195,32 +197,126 @@ public class LoginFormActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
             }
-            email = f_array[0];
-            nickname = f_array[1];
-
-//            JsonParser parser = new JsonParser();
-//            JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
-//
-//            Gson gson = new Gson();
-//            JsonObject mBeanJsonObj = rootObj.getAsJsonObject("mBean");
-//            String mBeanStr = gson.toJson(mBeanJsonObj);
-//            MemberBean mBean = gson.fromJson(mBeanStr, MemberBean.class);
-//
-//            String resultData = rootObj.get("result").getAsString();
+            email =  f_array[0];
+            nickname = f_array[6];
+            profile_image = f_array[2];
 
 
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
-            editor.putString(SHAREDPREFERENCES_LOGIN_ID, email);
-//            editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
-//            editor.putString(SHAREDPREFERENCES_MEMBER_NO, mBean.getMemberNo());
-            editor.commit(); // 변경사항을 저장하기
-
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-
+            insertVolley();
         }
+    }
+
+    // 가입되어 있는 것 확인 후, 로그인 후, 이동
+    public void insertVolley() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/member/selectMemberProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
+                    editor.putString(SHAREDPREFERENCES_LOGIN_ID, email);
+                    editor.putString(SHAREDPREFERENCES_LOGIN_NAME, nickname);
+                    editor.putString(SHAREDPREFERENCES_LOGIN_IMAGE, profile_image);
+                    editor.commit(); // 변경사항을 저장하기
+
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    insertVolleyNaverLogin();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberId", email);
+                params.put("memberName", nickname);
+                params.put("memberImg", profile_image);
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+
+    //네이버 로그인으로 회원가입 후,로그인 후, 이동
+    public void insertVolleyNaverLogin() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/member/insertMemberProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
+                    editor.putString(SHAREDPREFERENCES_LOGIN_ID, email);
+                    editor.putString(SHAREDPREFERENCES_LOGIN_NAME, nickname);
+                    editor.putString(SHAREDPREFERENCES_LOGIN_IMAGE, profile_image);
+                    editor.commit(); // 변경사항을 저장하기
+
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    Toast.makeText(getApplicationContext(),"네이버 아이디로 로그인 실패",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberId", email);
+                params.put("memberName", nickname);
+                params.put("memberImg", profile_image);
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
     }
 
     @Override

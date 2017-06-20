@@ -40,6 +40,7 @@ public class PagerInGroupDetailAdapter extends FragmentStatePagerAdapter {
             case 1:
                 GroupReviewFragment glf = new GroupReviewFragment();
                 Bundle bundle2 = new Bundle();
+                bundle2.putSerializable("gBean", groupBean);
                 bundle2.putParcelableArrayList("reviewList", reviewList);
                 glf.setArguments(bundle2);
                 return glf;
