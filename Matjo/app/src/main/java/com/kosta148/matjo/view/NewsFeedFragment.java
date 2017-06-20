@@ -1,5 +1,6 @@
 package com.kosta148.matjo.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -29,7 +30,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.NewsFeedAdapter;
+import com.kosta148.matjo.bean.GroupBean;
 import com.kosta148.matjo.bean.NewsFeedBean;
+import com.kosta148.matjo.bean.ReviewBean;
+import com.kosta148.matjo.data.DaumLocalBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +47,7 @@ public class NewsFeedFragment extends Fragment {
     List<NewsFeedBean> newsFeedList = new ArrayList<NewsFeedBean>();
     NewsFeedAdapter newsFeedAdapter;
     Handler handler = new Handler();
+    RequestQueue requestQueue;
 
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -93,10 +98,18 @@ public class NewsFeedFragment extends Fragment {
     AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mainActivity.showToast(newsFeedList.get(position).getTypeMsg());
             NewsFeedBean nBean = newsFeedList.get(position);
-
+            mainActivity.showToast(nBean.getTypeMsg()+"눌렸습니다 ["+nBean.getGroupNo()+"]");
             //TODO : type에 따라 다른 컨트롤러 호출
+            if (nBean.getType().equals("1")) { // 모임
+                // 모임
+                callGroupDetail(nBean.getGroupNo());
+
+            } else if (nBean.getType().equals("2")) { // 리뷰
+                // 리뷰
+                callRestaDetail(nBean.getGroupNo());
+
+            }
 
         }
     }; // end of ItemClickListener
@@ -119,16 +132,20 @@ public class NewsFeedFragment extends Fragment {
         }
     }; // end of OnScrollListener
 
+    /**
+     * 뉴스피드 목록 조회
+     * @param pageNoParam
+     */
     void callNewsFeedList(String pageNoParam) {
         final String pageNo = pageNoParam;
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/newsfeed/selectNewsFeedProc.do"
                 , new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
-                Log.d("MyLog", "response : " + response);
+                Log.d("MyLog", "NewsFeed response : " + response);
                 final String res = response;
                 // JSON 1차 파싱
                 JsonObject root = new JsonParser().parse(res).getAsJsonObject();
@@ -139,7 +156,7 @@ public class NewsFeedFragment extends Fragment {
                 // 뉴스피드 목록
                 final ArrayList<NewsFeedBean> newsFeedListTmp = gson.fromJson(newsFeedListJSArray.toString(), new TypeToken<ArrayList<NewsFeedBean>>() {}.getType());
 
-                Log.d("MyLog", "send Start");
+                Log.d("MyLog", "send NewsFeed Start");
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -150,7 +167,7 @@ public class NewsFeedFragment extends Fragment {
                         newsFeedAdapter.notifyDataSetChanged();
                     }
                 });
-                Log.e("MyLog", "send Finish");
+                Log.e("MyLog", "send NewsFeed Finish");
             }
         }, new Response.ErrorListener() {
             @Override
@@ -180,6 +197,155 @@ public class NewsFeedFragment extends Fragment {
 
         requestQueue.add(stringRequest);
     }
+
+    /**
+     * 모임 상세 페이지로 이동
+     * @param groupNoParam
+     */
+    void callGroupDetail(String groupNoParam) {
+        final String groupNo = groupNoParam;
+         requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/group/selectGroupDetailProc.do"
+                , new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("MyLog", "groupDetail response : " + response);
+                final String res = response;
+                // JSON 1차 파싱
+                JsonObject root = new JsonParser().parse(res).getAsJsonObject();
+                // 모임 정보
+                JsonObject groupJSObject = root.get("gBean").getAsJsonObject();
+                // 리뷰 목록
+                JsonArray reviewListJSArray = root.get("reviewList").getAsJsonArray();
+                Gson gson = new Gson();
+
+                // 모임 정보
+                final GroupBean gBean = gson.fromJson(groupJSObject, GroupBean.class);
+                // 모임 리뷰 목록
+                final ArrayList<ReviewBean> reviewBeanList = gson.fromJson(reviewListJSArray.toString(), new TypeToken<ArrayList<ReviewBean>>() {
+                }.getType());
+                // 개인 리뷰 목록 - 모임 리뷰에 추가
+                for (int i = 0; i < reviewListJSArray.size(); i++) {
+                    Log.d("MyLog", "PERREVIEW 추가중~ " + i);
+                    JsonObject reviewJSObject = reviewListJSArray.get(i).getAsJsonObject();
+                    JsonArray pereviewJSArray = reviewJSObject.get("pereviewList").getAsJsonArray();
+                    reviewBeanList.get(i).setPereviewJSArray(pereviewJSArray.toString());
+//                    ArrayList<PereviewBean> pereviewBeanList = gson.fromJson(pereviewJSArray.toString(), new TypeToken<ArrayList<PereviewBean>>(){}.getType());
+//                    reviewBeanList.get(i).setPereviewList(pereviewBeanList);
+//                    if (pereviewBeanList != null) {
+//                        Log.d("MyLog", "PEREVIEW 값들어감 : "+pereviewBeanList.size());
+//                    }
+                }
+
+                Log.d("MyLog", "send groupDetail Start");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 성공 시 값 보내주면서 모임 상세정보 액티비티 열어주기
+                        Intent intent = new Intent(mainActivity.getApplicationContext(), GroupDetailActivity.class);
+                        intent.putExtra("gBean", gBean);
+                        intent.putParcelableArrayListExtra("reviewList", reviewBeanList);
+                        mainActivity.startActivity(intent);
+                    }
+                });
+                Log.e("MyLog", "send groupDetail Finish");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity().getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("groupNo", groupNo);
+                return params;
+            }
+        };
+        // 재 호출 설정
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 5,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        requestQueue.add(stringRequest);
+    }
+
+    /**
+     * 뉴스피드 목록 조회
+     * @param restaIdParam
+     */
+    void callRestaDetail(String restaIdParam) {
+        final String restaId = restaIdParam;
+         requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/resta/selectRestaProcDB.do"
+                , new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("MyLog", "restaDetail response : " + response);
+                final String res = response;
+                // JSON 1차 파싱
+                JsonObject root = new JsonParser().parse(res).getAsJsonObject();
+                // 뉴스피드 목록 Json
+                JsonObject dlBeanJSObject = root.get("restaBean").getAsJsonObject();
+                Gson gson = new Gson();
+
+                // 뉴스피드 목록
+                final DaumLocalBean dlBean = gson.fromJson(dlBeanJSObject.toString(), DaumLocalBean.class);
+
+                Log.d("MyLog", "send restaDetail Start");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 성공 시 전송
+                        Intent intent = new Intent(getActivity().getApplicationContext(), RestaDetailActivity.class);
+                        intent.putExtra("dlBean", dlBean);
+                        mainActivity.startActivity(intent);
+                    }
+                });
+                Log.e("MyLog", "send restaDetail Finish");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity().getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("restaId",restaId);
+                return params;
+            }
+        };
+        // 재 호출 설정
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 5,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        requestQueue.add(stringRequest);
+    }
+
 
 } // end of class
 

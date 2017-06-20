@@ -39,9 +39,15 @@ import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
 
 
 import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.R.attr.name;
 
 public class LoginFormActivity extends AppCompatActivity {
 
@@ -74,8 +80,12 @@ public class LoginFormActivity extends AppCompatActivity {
     OAuthLoginButton mOAuthLoginButton;
     //네이버 로그인 정보
     OAuthLogin mOAuthLoginModule;
-
+    //네이버로그인시 필요-버튼클릭시 이동
     Activity activity;
+
+    //네이버로그인 정보 저장할 변수
+    String email = "";
+    String nickname = "";
 
 
     /**
@@ -86,40 +96,139 @@ public class LoginFormActivity extends AppCompatActivity {
         @Override
         public void run(boolean success) {
             if (success) {
-                String accessToken = mOAuthLoginModule.getAccessToken(getApplicationContext());
-                String refreshToken = mOAuthLoginModule.getRefreshToken(getApplicationContext());
-                long expiresAt = mOAuthLoginModule.getExpiresAt(getApplicationContext());
-                String tokenType = mOAuthLoginModule.getTokenType(getApplicationContext());
-//                mOauthAT.setText(accessToken);
-//                mOauthRT.setText(refreshToken);
-//                mOauthExpires.setText(String.valueOf(expiresAt));
-//                mOauthTokenType.setText(tokenType);
-//                mOAuthState.setText(mOAuthLoginModule.getState(getApplicationContext()).toString());
+                    String accessToken = mOAuthLoginModule.getAccessToken(getApplicationContext());
+                    String refreshToken = mOAuthLoginModule.getRefreshToken(getApplicationContext());
+                    long expiresAt = mOAuthLoginModule.getExpiresAt(getApplicationContext());
+                    String tokenType = mOAuthLoginModule.getTokenType(getApplicationContext());
+//                    mOauthAT.setText(accessToken);
+//                    mOauthRT.setText(refreshToken);
+//                    mOauthExpires.setText(String.valueOf(expiresAt));
+//                    mOauthTokenType.setText(tokenType);
+//                    mOAuthState.setText(mOAuthLoginModule.getState(getApplicationContext()).toString());
+                new RequestApiTask().execute();
+
             } else {
                 String errorCode = mOAuthLoginModule.getLastErrorCode(getApplicationContext()).getCode();
                 String errorDesc = mOAuthLoginModule.getLastErrorDesc(getApplicationContext());
                 Toast.makeText(getApplicationContext(), "errorCode:" + errorCode
-                        + ", errorDesc:" + errorDesc, Toast.LENGTH_SHORT).show();
+                        + ", errorDesc:" + errorDesc, Toast.LENGTH_LONG).show();
             }
         };
     };
 
+    private class RequestApiTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+            String url = "https://openapi.naver.com/v1/nid/getUserProfile.xml";
+            String at = mOAuthLoginModule.getAccessToken(getApplicationContext());
+            Pasingversiondata(mOAuthLoginModule.requestApi(getApplicationContext(), at, url));
+            return null;
+        }
 
+        protected void onPostExecute(Void content) {
+            Log.d("myLog", "email " + email);
+            Log.d("myLog", "name " + name);
+            Log.d("myLog", "nickname " + nickname);
+
+            if (email == null) {
+                Toast.makeText(activity,
+                        "로그인 실패하였습니다.  잠시후 다시 시도해 주세요!!", Toast.LENGTH_SHORT)
+                        .show();
+            } else {
+            }
+        }
+        private void Pasingversiondata(String data) { // xml 파싱
+            String f_array[] = new String[9];
+            try {
+                XmlPullParserFactory parserCreator = XmlPullParserFactory
+                        .newInstance();
+                XmlPullParser parser = parserCreator.newPullParser();
+                InputStream input = new ByteArrayInputStream(
+                        data.getBytes("UTF-8"));
+                parser.setInput(input, "UTF-8");
+                int parserEvent = parser.getEventType();
+                String tag;
+                boolean inText = false;
+                boolean lastMatTag = false;
+                int colIdx = 0;
+                while (parserEvent != XmlPullParser.END_DOCUMENT) {
+                    switch (parserEvent) {
+                        case XmlPullParser.START_TAG:
+                            tag = parser.getName();
+                            if (tag.compareTo("xml") == 0) {
+                                inText = false;
+                            } else if (tag.compareTo("data") == 0) {
+                                inText = false;
+                            } else if (tag.compareTo("result") == 0) {
+                                inText = false;
+                            } else if (tag.compareTo("resultcode") == 0) {
+                                inText = false;
+                            } else if (tag.compareTo("message") == 0) {
+                                inText = false;
+                            } else if (tag.compareTo("response") == 0) {
+                                inText = false;
+                            } else {
+                                inText = true;
+                            }
+                            break;
+                        case XmlPullParser.TEXT:
+                            tag = parser.getName();
+                            if (inText) {
+                                if (parser.getText() == null) {
+                                    f_array[colIdx] = "";
+                                } else {
+                                    f_array[colIdx] = parser.getText().trim();
+                                }
+                                colIdx++;
+                            }
+                            inText = false;
+                            break;
+                        case XmlPullParser.END_TAG:
+                            tag = parser.getName();
+                            inText = false;
+                            break;
+                    }
+                    parserEvent = parser.next();
+                }
+            } catch (Exception e) {
+            }
+            email = f_array[0];
+            nickname = f_array[1];
+
+//            JsonParser parser = new JsonParser();
+//            JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+//
+//            Gson gson = new Gson();
+//            JsonObject mBeanJsonObj = rootObj.getAsJsonObject("mBean");
+//            String mBeanStr = gson.toJson(mBeanJsonObj);
+//            MemberBean mBean = gson.fromJson(mBeanStr, MemberBean.class);
+//
+//            String resultData = rootObj.get("result").getAsString();
+
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(SHAREDPREFERENCES_LOGIN_AUTO, checkBoxAutoLogin.isChecked());
+            editor.putString(SHAREDPREFERENCES_LOGIN_ID, email);
+//            editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
+//            editor.putString(SHAREDPREFERENCES_MEMBER_NO, mBean.getMemberNo());
+            editor.commit(); // 변경사항을 저장하기
+
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginform);
         activity = this;
-        Log.d("로그확인","1");
-        //네이버 로그인 정보 저장
-        mOAuthLoginModule = OAuthLogin.getInstance();
-        mOAuthLoginModule.init(
-                    getApplicationContext()
-                ,"R_2VTJtZ2pPxEqkyzxXH"
-                ,"R_2VTJtZ2pPxEqkyzxXH"
-                ,"Matjo"
-        );
+
         mOAuthLoginButton = (OAuthLoginButton) findViewById(R.id.buttonOAuthLoginImg);
         mOAuthLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,10 +236,18 @@ public class LoginFormActivity extends AppCompatActivity {
                 mOAuthLoginButton.setOAuthLoginHandler(mOAuthLoginHandler);
                 mOAuthLoginButton.setBgResourceId(R.drawable.naver_login_icon);
 
+                //네이버 로그인 정보 저장
+                mOAuthLoginModule = OAuthLogin.getInstance();
+                mOAuthLoginModule.init(
+                        getApplicationContext()
+                        ,"R_2VTJtZ2pPxEqkyzxXH"
+                        ,"RqId8DRmdG"
+                        ,"Matjo"
+                );
                 mOAuthLoginModule.startOauthLoginActivity(activity, mOAuthLoginHandler);
-
             }
         });
+
 
         // xml 위젯 초기화
         etId = (EditText) findViewById(R.id.etId);
