@@ -19,12 +19,14 @@ public class SplashActivity extends Activity {
     // SharedPreferences 키 상수
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
 
-    Handler handler = new Handler();
+    Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        handler = new Handler();
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
     } // end of onCreate
@@ -37,22 +39,32 @@ public class SplashActivity extends Activity {
 
     @Override
     protected void onResume() {
+        boolean autoFlag = true;
         if (sharedPreferences != null) {
             if (sharedPreferences.getBoolean(SHAREDPREFERENCES_LOGIN_AUTO, false)) {
                 // 자동 로그인 설정시
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
-                finish();
+                autoFlag = false;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }, 1000);
+
             }
         }
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent =  new Intent(SplashActivity.this, LoginFormActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        }, 1000);
+        if (autoFlag) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(SplashActivity.this, LoginFormActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }, 1000);
+        }
         super.onResume();
     } // end of onResume
 } // end of class
