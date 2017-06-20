@@ -98,25 +98,17 @@
             android:textSize="15sp"
             android:text="주소입력 : "/>
 
-        <EditText
-            android:id="@+id/etAddress1"
+        <Spinner
+            android:id="@+id/spinnerCity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ems="5"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:hint="광역시/도"
-            android:inputType="textPersonName" />
+            android:layout_weight="1"/>
 
-        <EditText
-            android:id="@+id/etAddress2"
+        <Spinner
+            android:id="@+id/spinnerLocal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ems="5"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:hint="시/군/구"
-            android:inputType="textPersonName" />
+            android:layout_weight="1"/>
 
     </LinearLayout>
 

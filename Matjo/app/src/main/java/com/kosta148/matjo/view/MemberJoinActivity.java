@@ -3,6 +3,7 @@ package com.kosta148.matjo.view;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -27,9 +29,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
+import com.kosta148.matjo.bean.AddressBean;
 import com.kosta148.matjo.data.MemberBean;
+import com.kosta148.matjo.util.AddressCityAPI;
+import com.kosta148.matjo.util.AddressLocalAPI;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,8 +53,8 @@ public class MemberJoinActivity extends AppCompatActivity {
     private EditText etNickname;
     private Spinner spinnerHp;
     private EditText etHp;
-    private EditText etAddress1;
-    private EditText etAddress2;
+    private Spinner spinnerCity;
+    private Spinner spinnerLocal;
     private Spinner spinnerQuestion;
     private EditText etAnswer;
     private Button btnSubmit;
@@ -65,6 +72,9 @@ public class MemberJoinActivity extends AppCompatActivity {
 
     // Handler 객체
     Handler handler = new Handler();
+
+    List<AddressBean> localList;
+    ArrayList<String> localArrayList;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +88,8 @@ public class MemberJoinActivity extends AppCompatActivity {
         etNickname = (EditText)findViewById(R.id.etNickname);
         spinnerHp = (Spinner)findViewById(R.id.spinnerHp);
         etHp = (EditText)findViewById(R.id.etHp);
-        etAddress1 = (EditText)findViewById(R.id.etAddress1);
-        etAddress2 = (EditText)findViewById(R.id.etAddress2);
+        spinnerCity = (Spinner)findViewById(R.id.spinnerCity);
+        spinnerLocal = (Spinner)findViewById(R.id.spinnerLocal);
         spinnerQuestion = (Spinner)findViewById(R.id.spinnerQuestion);
         etAnswer = (EditText)findViewById(R.id.etAnswer);
         btnSubmit = (Button)findViewById(R.id.btnSubmit);
@@ -138,6 +148,49 @@ public class MemberJoinActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // 아무것도 선택되지 않았을 때 호출되는 콜백 메서드
+            }
+        });
+
+        // spinnerCity setting
+        List<AddressBean> cityList = new AddressCityAPI().addrList;
+        ArrayList<String> cityArrayList = new ArrayList<String>();
+        for (int i = 0; i < cityList.size(); i++) {
+            cityArrayList.add(cityList.get(i).getName());
+        }
+
+        ArrayAdapter<String> adapterCity = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, cityArrayList);
+        //스피너 속성
+        spinnerCity.setAdapter(adapterCity);
+
+        spinnerCity.setSelection(0);
+        spinnerCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerCity.setSelection(position);
+                Toast.makeText(getApplicationContext(), "도시 : " + spinnerCity.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+
+                localList = new AddressLocalAPI().getList(spinnerCity.getSelectedItem().toString());
+                localArrayList = new ArrayList<String>();
+                for (int i = 0; i < localList.size(); i++) {
+                    localArrayList.add(localList.get(i).getName());
+                }
+                ArrayAdapter<String> adapterLocal = new ArrayAdapter<String>(MemberJoinActivity.this, android.R.layout.simple_spinner_dropdown_item, localArrayList);
+                spinnerLocal.setAdapter(adapterLocal);
+
+                spinnerLocal.setSelection(0);
+                spinnerLocal.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        spinnerLocal.setSelection(position);
+                        Toast.makeText(getApplicationContext(), "지역 : " + spinnerLocal.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
@@ -241,8 +294,8 @@ public class MemberJoinActivity extends AppCompatActivity {
                 params.put("memberPw", etPassword.getText().toString());
                 params.put("memberName", etNickname.getText().toString());
                 params.put("memberHp", spinnerHp.getSelectedItem().toString()+etHp.getText().toString());
-                params.put("memberCity", etAddress1.getText().toString());
-                params.put("memberLocal", etAddress2.getText().toString());
+                params.put("memberCity", spinnerCity.getSelectedItem().toString());
+                params.put("memberLocal", spinnerLocal.getSelectedItem().toString());
                 params.put("memberQuestion", spinnerQuestion.getSelectedItemPosition()+"");
                 params.put("memberAnswer", etAnswer.getText().toString());
 
