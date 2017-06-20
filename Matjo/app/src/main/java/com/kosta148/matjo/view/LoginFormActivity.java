@@ -197,9 +197,10 @@ public class LoginFormActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
             }
-            email =  f_array[6];
-            nickname = f_array[0];
-            profile_image = f_array[3];
+            email =  f_array[0];
+            nickname = f_array[6];
+            profile_image = f_array[2];
+
 
             insertVolley();
         }
