@@ -127,6 +127,12 @@ public class GroupReviewFragment extends Fragment {
         recyclerview.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
+        dataSet();
+
+        return v;
+    } // end of onCreateView
+
+    public void dataSet(){
         data = new ArrayList<>();
 
         for (int i = 0; i < reviewList.size(); i++) {
@@ -141,9 +147,7 @@ public class GroupReviewFragment extends Fragment {
             }
             data.add(placeTmp);
         }
-
-        return v;
-    } // end of onCreateView
+    }
 
     // 소속회원 체크 서버연동
     public void checkMemberVolley() {
@@ -210,7 +214,6 @@ public class GroupReviewFragment extends Fragment {
 
                 if ("ok".equals(resultData)) {
                     callGroupDetail();
-                    adapter.notifyDataSetChanged();
                     Toast.makeText(getContext(), "개인리뷰를 작성하였습니다.", Toast.LENGTH_SHORT).show();
                 } else {
                 }
@@ -272,14 +275,14 @@ public class GroupReviewFragment extends Fragment {
                     JsonObject reviewJSObject = reviewListJSArray.get(i).getAsJsonObject();
                     JsonArray pereviewJSArray = reviewJSObject.get("pereviewList").getAsJsonArray();
                     reviewBeanList.get(i).setPereviewJSArray(pereviewJSArray.toString());
-//                    ArrayList<PereviewBean> pereviewBeanList = gson.fromJson(pereviewJSArray.toString(), new TypeToken<ArrayList<PereviewBean>>(){}.getType());
-//                    reviewBeanList.get(i).setPereviewList(pereviewBeanList);
-//                    if (pereviewBeanList != null) {
-//                        Log.d("MyLog", "PEREVIEW 값들어감 : "+pereviewBeanList.size());
-//                    }
                 }
+
                 groupBean = gBean;
                 reviewList = reviewBeanList;
+                dataSet();
+
+                checkMemberVolley();
+                Toast.makeText(getContext(), "수행완료", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
