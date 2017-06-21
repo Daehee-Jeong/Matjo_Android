@@ -313,5 +313,5 @@ public class GroupDetailActivity extends AppCompatActivity {
         };
         requestQueue.add(stringRequest);
     }
-    
+
 } // end of class

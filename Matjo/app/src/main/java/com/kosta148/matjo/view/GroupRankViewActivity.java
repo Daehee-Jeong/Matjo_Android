@@ -14,37 +14,37 @@ import com.kosta148.matjo.R;
  * Created by kota on 2017-06-17.
  */
 
-public class NoticeWebViewActivity extends AppCompatActivity {
+public class GroupRankViewActivity extends AppCompatActivity {
     Context context;
-    WebView noticewebView;
+    WebView inquiryView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notice);
+        setContentView(R.layout.activity_group_rank);
         context = getApplicationContext();
 
-        noticewebView = (WebView)findViewById(R.id.noticeWebView);
+        inquiryView = (WebView)findViewById(R.id.grouprankWebView);
         //자바스트립트 사용 셋팅
-        noticewebView.getSettings().setLoadWithOverviewMode(true); // 웹뷰에서 페이지가 확대되는 문제해결
-        noticewebView.getSettings().setUseWideViewPort(true);
-        noticewebView.setInitialScale(1); // 기기별 화면사이트에 맞게 조절
-        noticewebView.setWebViewClient(new WebViewClientHandler());
-        noticewebView.getSettings().setJavaScriptEnabled(true);
-        noticewebView.loadUrl("http://ldh66210.cafe24.com/notice/selectNoticeListMobile.do");
-
+        inquiryView.getSettings().setLoadWithOverviewMode(true); // 웹뷰에서 페이지가 확대되는 문제해결
+        inquiryView.getSettings().setUseWideViewPort(true);
+        inquiryView.setInitialScale(1); // 기기별 화면사이트에 맞게 조절
+        inquiryView.setWebViewClient(new WebViewClientHandler());
+        inquiryView.getSettings().setJavaScriptEnabled(true);
+        inquiryView.loadUrl("http://ldh66210.cafe24.com/rank/selectRankForm.do");
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-        finish();
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     class WebViewClientHandler extends WebViewClient {

@@ -40,31 +40,24 @@
         android:text="자동 로그인" />
 
     <Button
-        android:id="@+id/btnKakaoLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/etPassword"
-        android:layout_below="@+id/etPassword"
-        android:layout_marginTop="40dp"
-        android:text="카카오 로그인" />
-
-    <Button
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/etPassword"
         android:layout_below="@+id/etPassword"
         android:layout_marginTop="40dp"
-        android:text="로그인" />
+        android:text="로그인"
+        android:layout_alignLeft="@+id/checkBoxAutoLogin"
+        android:layout_alignStart="@+id/checkBoxAutoLogin"
+        android:layout_alignRight="@+id/etPassword"
+        android:layout_alignEnd="@+id/etPassword" />
 
     <com.nhn.android.naverlogin.ui.view.OAuthLoginButton
         android:id="@+id/buttonOAuthLoginImg"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_below="@+id/btnKakaoLogin"
-        android:layout_marginTop="20dp"
-        android:layout_alignLeft="@+id/btnKakaoLogin"
-        android:layout_alignStart="@+id/btnKakaoLogin"
+        android:layout_below="@+id/btnLogin"
+        android:layout_alignLeft="@+id/btnLogin"
+        android:layout_alignStart="@+id/btnLogin"
         android:layout_alignRight="@+id/btnLogin"
         android:layout_alignEnd="@+id/btnLogin" />
 
