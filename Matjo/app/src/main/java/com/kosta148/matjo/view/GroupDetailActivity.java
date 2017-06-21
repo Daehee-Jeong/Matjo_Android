@@ -1,7 +1,10 @@
 package com.kosta148.matjo.view;
 
-import android.app.Dialog;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -11,15 +14,27 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.astuetz.PagerSlidingTabStrip;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.PagerInGroupDetailAdapter;
 import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
@@ -31,6 +46,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class GroupDetailActivity extends AppCompatActivity {
@@ -42,6 +59,8 @@ public class GroupDetailActivity extends AppCompatActivity {
     // 변경시킬 타이틀 명 (모임 이름)
     String name = "다먹어버리조";
     TextView tvScrollingIndex;
+    EditText etContent;
+    FloatingActionButton fab;
 
     Toolbar toolbar;
     ViewPager viewPagerInToolbar;
@@ -54,16 +73,23 @@ public class GroupDetailActivity extends AppCompatActivity {
 
     Bitmap bitmap;
 
+    // SharedPreferences 선언
+    private SharedPreferences sharedPreferences;
+
+    // SharedPreferences 키 상수
+    private static final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
+
+    GroupBean groupBean;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_detail);
 
-        Log.d("MyLog", "open GroupDetailActivity");
+        sharedPreferences = getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
 
         // 값 받기
         Intent intent = getIntent();
-        GroupBean groupBean = (GroupBean)intent.getSerializableExtra("gBean");
+        groupBean = (GroupBean)intent.getSerializableExtra("gBean");
         // TODO reviewBean도 받아오자
         ArrayList<ReviewBean> reviewList = intent.getParcelableArrayListExtra("reviewList");
 
@@ -85,16 +111,9 @@ public class GroupDetailActivity extends AppCompatActivity {
         tvScrollingIndex = (TextView) findViewById(R.id.tvScrollingIndex);
         tvScrollingIndex.setText("1 / " + (resArr.length));
 
-        // 플로팅 액션 버튼 (보류)
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                /* 전화하기 기능 구현 */
-            }
-        });
+        checkMemberVolley();
+
+
 
         /** 툴바 내 뷰페이저 구현 **/
         // 1. 다량의 데이터 : 멤버변수 resArr
@@ -172,4 +191,123 @@ public class GroupDetailActivity extends AppCompatActivity {
 
     }
 
+    // 모임가입 신청 서버연동
+    public void insertGroupVolley() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/android/insertGroupMemberProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+                String resultData = rootObj.get("result").getAsString();
+                String resultMsg = rootObj.get("resultMsg").getAsString();
+
+                if ("success".equals(resultData)) {
+                    Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberNo", sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NO, ""));
+                params.put("groupNo", groupBean.getGroupNo());
+                params.put("applyContent", etContent.getText().toString());
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+
+    // 소속회원 체크 서버연동
+    public void checkMemberVolley() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/android/checkMemberProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+
+                } else {
+                    fab = (FloatingActionButton) findViewById(R.id.fabInsertGroup);
+                    fab.setVisibility(View.VISIBLE);
+
+                    // 플로팅 액션 버튼 (가입기능)
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // 가입 기능
+                            AlertDialog.Builder builder = new AlertDialog.Builder(GroupDetailActivity.this);
+                            LayoutInflater lif = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                            View dView = lif.inflate(R.layout.dialog_insertgroup, null);
+
+                            etContent = (EditText) dView.findViewById(R.id.etContent);
+
+                            builder.setTitle("모임가입 신청");
+                            builder.setView(dView);
+                            builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    insertGroupVolley();
+                                }
+                            });
+                            builder.setNegativeButton("취소", null);
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberNo", sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NO, ""));
+                params.put("groupNo", groupBean.getGroupNo());
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+    
 } // end of class
