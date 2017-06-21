@@ -20,12 +20,16 @@
             android:title="모임 랭킹" />
     </group>
 
-    <item android:title="맛조의 소리">
+    <item android:title="맛조설정">
         <menu>
             <item
-                android:id="@+id/nav_inform"
+                android:id="@+id/nav_notice"
                 android:icon="@drawable/ic_inform"
                 android:title="공지 사항" />
+            <item
+                android:id="@+id/nav_inquiry"
+                android:icon="@drawable/ic_inform"
+                android:title="고객의 소리" />
             <item
                 android:id="@+id/nav_setting"
                 android:icon="@drawable/ic_setting"

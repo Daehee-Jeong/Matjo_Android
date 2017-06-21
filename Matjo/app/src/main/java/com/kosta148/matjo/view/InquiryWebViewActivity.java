@@ -1,6 +1,7 @@
 package com.kosta148.matjo.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,20 @@ public class InquiryWebViewActivity extends AppCompatActivity {
         inquiryView.setWebViewClient(new WebViewClientHandler());
         inquiryView.getSettings().setJavaScriptEnabled(true);
         inquiryView.loadUrl("http://ldh66210.cafe24.com/inquiry/selectInquiryListMobile.do");
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     class WebViewClientHandler extends WebViewClient {

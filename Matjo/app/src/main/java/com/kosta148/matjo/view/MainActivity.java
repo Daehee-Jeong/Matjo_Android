@@ -486,17 +486,22 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     } else if (id == R.id.nav_rank) {
                         // TODO : 모임 랭킹 이동
-                        Intent intent = new Intent(context, NoticeWebViewActivity.class );
+                        Intent intent = new Intent(context, GroupRankViewActivity.class );
                         startActivity(intent);
                         finish();
-                    } else if (id == R.id.nav_inform) {
+                    } else if (id == R.id.nav_notice) {
                         // TODO : 공지 사항 창
                         Intent intent = new Intent(context, NoticeWebViewActivity.class );
                         startActivity(intent);
                         finish();
+                    } else if (id == R.id.nav_inquiry) {
+                        // TODO : 고객의 소리 창
+                        Intent intent = new Intent(context,InquiryWebViewActivity.class );
+                        startActivity(intent);
+                        finish();
                     } else if (id == R.id.nav_setting) {
                         // TODO : 환경 설정 창
-                        Intent intent = new Intent(context, NoticeWebViewActivity.class );
+                        Intent intent = new Intent(context, SetupActivity.class );
                         startActivity(intent);
                         finish();
                     }
