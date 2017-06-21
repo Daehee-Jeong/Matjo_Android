@@ -17,9 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by anandbose on 09/06/15.
+ * Created by Daehee on 2017-06-21.
  */
-public class RestaExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+public class RestaExpandableListAdapter extends RecyclerView.Adapter{
     Context context;
     public static final int HEADER = 0;
     public static final int CHILD = 1;
@@ -180,4 +181,4 @@ public class RestaExpandableListAdapter extends RecyclerView.Adapter<RecyclerVie
             this.imgReview = imgReview;
         }
     } // end of class Item
-} // end of class Adapter
+}

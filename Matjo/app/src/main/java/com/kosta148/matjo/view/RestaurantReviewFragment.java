@@ -1,48 +1,30 @@
 package com.kosta148.matjo.view;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RatingBar;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.ExpandableListAdapter;
+import com.kosta148.matjo.adapter.RestaExpandableListAdapter;
 import com.kosta148.matjo.bean.PereviewBean;
 import com.kosta148.matjo.bean.ReviewBean;
 import com.kosta148.matjo.data.DaumLocalBean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Daehee on 2017-05-14.
@@ -65,9 +47,9 @@ public class RestaurantReviewFragment extends Fragment {
     EditText etContent;
     RatingBar ratingBar;
 
-    ExpandableListAdapter adapter;
+    RestaExpandableListAdapter adapter;
 
-    List<ExpandableListAdapter.Item> data;
+    List<RestaExpandableListAdapter.Item> data;
     DaumLocalBean dlBean;
 
     Handler handler = new Handler();
@@ -80,7 +62,6 @@ public class RestaurantReviewFragment extends Fragment {
         reviewList = getArguments().getParcelableArrayList("reviewList");
         if (reviewList == null) reviewList = new ArrayList<ReviewBean>();
 
-        sharedPreferences = getContext().getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
         Gson gson = new Gson();
         for (int i = 0; i < reviewList.size(); i++) {
             ArrayList<PereviewBean> pereviewBeanList = gson.fromJson(reviewList.get(i).getPereviewJSArray(), new TypeToken<ArrayList<PereviewBean>>() {}.getType());
@@ -94,8 +75,23 @@ public class RestaurantReviewFragment extends Fragment {
         recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
 
+        List<RestaExpandableListAdapter.Item> data = new ArrayList<>();
+
+        for (int i = 0; i < reviewList.size(); i++) {
+            // TODO 업소 이미지 받아올 수 있나요?
+            RestaExpandableListAdapter.Item placeTmp = new RestaExpandableListAdapter.Item(RestaExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), R.drawable.profile, Double.valueOf(reviewList.get(i).getAvgRating()));
+            placeTmp.invisibleChildren = new ArrayList<>();
+            List<PereviewBean> perTmpList = reviewList.get(i).getPereviewList();
+            int perSize = perTmpList.size();
+            for (int j = 0; j < perSize; j++) {
+                PereviewBean perTmp = perTmpList.get(j);
+                placeTmp.invisibleChildren.add(new RestaExpandableListAdapter.Item(RestaExpandableListAdapter.CHILD, perTmp.getPereviewMemName()+":"+perTmp.getPereviewContent(), R.drawable.img06));
+            }
+            data.add(placeTmp);
+        }
+
+        recyclerview.setAdapter(new RestaExpandableListAdapter(data, restaDetailActivity.getApplicationContext()));
 
         return v;
     } // end of onCreateView
-
 } // end of class
