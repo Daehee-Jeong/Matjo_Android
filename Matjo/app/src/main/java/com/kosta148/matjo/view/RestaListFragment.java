@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -32,8 +33,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.RestaListAdapter;
+import com.kosta148.matjo.bean.GroupBean;
+import com.kosta148.matjo.bean.ReviewBean;
 import com.kosta148.matjo.data.DaumLocalBean;
 
 import java.util.ArrayList;
@@ -47,6 +51,8 @@ import java.util.Map;
 
 public class RestaListFragment extends Fragment {
     MainActivity mainActivity;
+    Handler handler = new Handler();
+
     ListView listView;
     List<DaumLocalBean> restaList = new ArrayList<DaumLocalBean>();
     RestaListAdapter restaListAdapter;
@@ -103,10 +109,12 @@ public class RestaListFragment extends Fragment {
                 return;
             }
             mainActivity.showToast(restaList.get(position-1).getRestaTitle());
-            Intent intent = new Intent(getActivity().getApplicationContext(), RestaDetailActivity.class);
+//            Intent intent = new Intent(getActivity().getApplicationContext(), RestaDetailActivity.class);
             DaumLocalBean dlBean = restaList.get(position-1); // headerView 의 추가로 1을 빼주어야 한다.
-            intent.putExtra("dlBean", dlBean);
-            startActivity(intent);
+//            intent.putExtra("dlBean", dlBean);
+//            startActivity(intent);
+
+            callRestaDetail(dlBean);
         }
     }; // end of ItemClickListener
 
@@ -240,5 +248,93 @@ public class RestaListFragment extends Fragment {
             }
         };
         requestQueue.add(stringRequest);
-    }
+    } // end of searchResta()
+
+    void callRestaDetail(final DaumLocalBean dlBean) {
+        final String restaId = dlBean.getRestaId();
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/resta/selectRestaProc.do"
+                , new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("MyLog", "response : " + response);
+                final String res = response;
+                // JSON 1차 파싱
+                JsonObject root = new JsonParser().parse(res).getAsJsonObject();
+
+                String result = root.get("result").getAsString();
+                String resultMsg = root.get("resultMsg").getAsString();
+
+                if (!"fail".equals(result)) {
+                    // 리뷰 목록
+                    JsonArray reviewListJSArray = root.get("reviewList").getAsJsonArray();
+                    Gson gson = new Gson();
+
+                    if (reviewListJSArray != null && reviewListJSArray.size() > 0) {
+                        // 모임 리뷰 목록
+                        final ArrayList<ReviewBean> reviewBeanList = gson.fromJson(reviewListJSArray.toString(), new TypeToken<ArrayList<ReviewBean>>() {
+                        }.getType());
+                        // 개인 리뷰 목록 - 모임 리뷰에 추가
+                        for (int i = 0; i < reviewListJSArray.size(); i++) {
+                            Log.d("MyLog", "PERREVIEW 추가중~ " + i);
+                            JsonObject reviewJSObject = reviewListJSArray.get(i).getAsJsonObject();
+                            JsonArray pereviewJSArray = reviewJSObject.get("pereviewList").getAsJsonArray();
+                            reviewBeanList.get(i).setPereviewJSArray(pereviewJSArray.toString());
+//                    ArrayList<PereviewBean> pereviewBeanList = gson.fromJson(pereviewJSArray.toString(), new TypeToken<ArrayList<PereviewBean>>(){}.getType());
+//                    reviewBeanList.get(i).setPereviewList(pereviewBeanList);
+//                    if (pereviewBeanList != null) {
+//                        Log.d("MyLog", "PEREVIEW 값들어감 : "+pereviewBeanList.size());
+//                    }
+                        }
+
+                        Log.d("MyLog", "send Start");
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 성공 시 값 보내주면서 모임 상세정보 액티비티 열어주기
+                                Intent intent = new Intent(mainActivity.getApplicationContext(), RestaDetailActivity.class);
+                                intent.putParcelableArrayListExtra("reviewList", reviewBeanList);
+                                intent.putExtra("dlBean", dlBean);
+                                mainActivity.startActivity(intent);
+                            }
+                        });
+                        Log.e("MyLog", "send Finish");
+                    } // end of if
+                } else {
+                    mainActivity.showToast(resultMsg);
+                    Intent intent = new Intent(mainActivity.getApplicationContext(), RestaDetailActivity.class);
+                    intent.putExtra("dlBean", dlBean);
+                    mainActivity.startActivity(intent);
+                }
+            } // end of onResponse
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity().getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("restaId", restaId);
+                return params;
+            }
+        };
+        // 재 호출 설정
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 5,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        requestQueue.add(stringRequest);
+    } // end of callRestaDetail()
 } // end of class
