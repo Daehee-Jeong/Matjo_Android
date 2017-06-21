@@ -56,8 +56,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
+                android:layout_weight="1"
                 android:textSize="16sp"
                 android:text="정보 3 (메뉴 정보)"/>
+
+            <Button
+                android:id="@+id/btnShowMember"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="모임원보기"
+                android:layout_gravity="center_vertical"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
