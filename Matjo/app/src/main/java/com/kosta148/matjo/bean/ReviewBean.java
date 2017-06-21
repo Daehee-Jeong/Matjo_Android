@@ -8,6 +8,7 @@ import java.util.List;
 public class ReviewBean implements Parcelable{
 	
 	private String reviewNo;
+	private String reviewGroupImg;
 	private String reviewGroupNo;
 	private String reviewRestaNo;
 	private String reviewRestaName;
@@ -36,13 +37,17 @@ public class ReviewBean implements Parcelable{
 		this.reviewNo = reviewNo;
 	}
 
+
 	protected ReviewBean(Parcel in) {
 		reviewNo = in.readString();
+		reviewGroupImg = in.readString();
 		reviewGroupNo = in.readString();
 		reviewRestaNo = in.readString();
 		reviewRestaName = in.readString();
 		reviewRestaCate = in.readString();
 		reviewIsOpen = in.readString();
+		pereviewList = in.createTypedArrayList(PereviewBean.CREATOR);
+		pereviewJSArray = in.readString();
 		memberNo = in.readString();
 		reviewDate = in.readString();
 		reviewLike = in.readString();
@@ -50,17 +55,19 @@ public class ReviewBean implements Parcelable{
 		reviewNowMember = in.readString();
 		reviewHasLike = in.readString();
 		avgRating = in.readString();
-		pereviewJSArray = in.readString();
 	}
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(reviewNo);
+		dest.writeString(reviewGroupImg);
 		dest.writeString(reviewGroupNo);
 		dest.writeString(reviewRestaNo);
 		dest.writeString(reviewRestaName);
 		dest.writeString(reviewRestaCate);
 		dest.writeString(reviewIsOpen);
+		dest.writeTypedList(pereviewList);
+		dest.writeString(pereviewJSArray);
 		dest.writeString(memberNo);
 		dest.writeString(reviewDate);
 		dest.writeString(reviewLike);
@@ -68,7 +75,6 @@ public class ReviewBean implements Parcelable{
 		dest.writeString(reviewNowMember);
 		dest.writeString(reviewHasLike);
 		dest.writeString(avgRating);
-		dest.writeString(pereviewJSArray);
 	}
 
 	@Override
@@ -76,7 +82,6 @@ public class ReviewBean implements Parcelable{
 		return 0;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static final Creator<ReviewBean> CREATOR = new Creator<ReviewBean>() {
 		@Override
 		public ReviewBean createFromParcel(Parcel in) {
@@ -198,6 +203,11 @@ public class ReviewBean implements Parcelable{
 		this.pereviewJSArray = pereviewJSArray;
 	}
 
+	public String getReviewGroupImg() {
+		return reviewGroupImg;
+	}
 
-	
+	public void setReviewGroupImg(String reviewGroupImg) {
+		this.reviewGroupImg = reviewGroupImg;
+	}
 } // end of class
