@@ -1,6 +1,6 @@
 package com.kosta148.matjo.view;
 
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +60,7 @@ public class GroupDetailActivity extends AppCompatActivity {
     String name = "다먹어버리조";
     TextView tvScrollingIndex;
     EditText etContent;
+    FloatingActionButton fab;
 
     Toolbar toolbar;
     ViewPager viewPagerInToolbar;
@@ -112,30 +111,9 @@ public class GroupDetailActivity extends AppCompatActivity {
         tvScrollingIndex = (TextView) findViewById(R.id.tvScrollingIndex);
         tvScrollingIndex.setText("1 / " + (resArr.length));
 
-        // 플로팅 액션 버튼 (가입기능)
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabInsertGroup);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // 가입 기능
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
-                LayoutInflater lif = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View dView = lif.inflate(R.layout.dialog_insertgroup, null);
+        checkMemberVolley();
 
-                etContent = (EditText) dView.findViewById(R.id.etContent);
 
-                dialog.setTitle("모임가입 신청");
-                dialog.setView(dView);
-                dialog.setPositiveButton("예", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        insertGroupVolley();
-                    }
-                });
-                dialog.setNegativeButton("취소", null);
-                dialog.show();
-            }
-        });
 
         /** 툴바 내 뷰페이저 구현 **/
         // 1. 다량의 데이터 : 멤버변수 resArr
@@ -259,4 +237,77 @@ public class GroupDetailActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    // 소속회원 체크 서버연동
+    public void checkMemberVolley() {
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/android/checkMemberProc.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+
+                } else {
+                    fab = (FloatingActionButton) findViewById(R.id.fabInsertGroup);
+                    fab.setVisibility(View.VISIBLE);
+
+                    // 플로팅 액션 버튼 (가입기능)
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // 가입 기능
+                            AlertDialog.Builder builder = new AlertDialog.Builder(GroupDetailActivity.this);
+                            LayoutInflater lif = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                            View dView = lif.inflate(R.layout.dialog_insertgroup, null);
+
+                            etContent = (EditText) dView.findViewById(R.id.etContent);
+
+                            builder.setTitle("모임가입 신청");
+                            builder.setView(dView);
+                            builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    insertGroupVolley();
+                                }
+                            });
+                            builder.setNegativeButton("취소", null);
+
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("memberNo", sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NO, ""));
+                params.put("groupNo", groupBean.getGroupNo());
+
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+    
 } // end of class
