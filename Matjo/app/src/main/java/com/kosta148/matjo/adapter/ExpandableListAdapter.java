@@ -13,26 +13,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
-import com.kosta148.matjo.bean.GroupBean;
 import com.kosta148.matjo.util.RoundedDrawable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by anandbose on 09/06/15.
@@ -47,8 +35,16 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     RoundedDrawable rd;
 
     boolean isMember = false;
+    boolean hasWritten = false;
 
     Handler handler = new Handler();
+
+    // SharedPreferences 선언
+    private SharedPreferences sharedPreferences;
+    // SharedPreferences 키 상수
+    private static final String SHAREDPREFERENCES_MEMBER_NAME = "memberName";
+    private String loginName = "";
+
     private ItemClick itemClick;
     public interface ItemClick {
         public void onClick(View view,int position);
@@ -65,6 +61,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.profile);
         rd = new RoundedDrawable(bm);
         this.isMember = isMember;
+
+        sharedPreferences = context.getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
+        loginName = sharedPreferences.getString(SHAREDPREFERENCES_MEMBER_NAME, "");
+        Log.d("MyLog", "loginName is <"+loginName+">");
     }
 
     @Override
@@ -82,6 +82,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             case HEADER:
                 view = inflater.inflate(R.layout.list_header, parent, false);
                 ListHeaderViewHolder header = new ListHeaderViewHolder(view);
+
                 if(isMember){
                     header.header_pereviw.setVisibility(View.VISIBLE);
                 }
@@ -115,8 +116,24 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 headerViewHolder.header_title.setText(item.title);
                 headerViewHolder.header_profile.setImageDrawable(rd);
 
-                if(isMember){
+                // 회원일때만 개인리뷰 작성 / 기존 개인리뷰 작성 안했으면 작성
+                List<Item> childList = data.get(position).invisibleChildren;
+                hasWritten = false;
+                // 개인 리뷰 작성했는지 여부 확인
+                for (int i = 0; i < childList.size(); i++) {
+                    String itemContent = childList.get(i).content;
+                    String memberName = itemContent.substring(0, itemContent.indexOf(':'));
+                    Log.d("MyLog", "memberName is <" + memberName + ">");
+                    if (loginName.equals(memberName)) {
+                        Log.d("MyLog", "you have already written review " + position);
+                        hasWritten = true;
+                        break;
+                    }
+                }
+                if(isMember && !hasWritten){
                     headerViewHolder.header_pereviw.setVisibility(View.VISIBLE);
+                } else {
+                    headerViewHolder.header_pereviw.setVisibility(View.INVISIBLE);
                 }
 
                 headerViewHolder.header_pereviw.setOnClickListener(new View.OnClickListener() {
