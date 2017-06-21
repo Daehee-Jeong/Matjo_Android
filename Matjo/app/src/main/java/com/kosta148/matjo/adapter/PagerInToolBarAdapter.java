@@ -10,6 +10,9 @@ import com.kosta148.matjo.R;
 import com.kosta148.matjo.data.DaumLocalBean;
 import com.kosta148.matjo.view.ImageFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Daehee on 2017-05-13.
  */
@@ -18,12 +21,18 @@ public class PagerInToolBarAdapter extends FragmentStatePagerAdapter {
     // 다량의 데이터 (업소 사진들)
     int resArr[];
     Bitmap bitmap;
+    List<String> imgList;
     /**
      * 툴바 안에 있는 뷰페이저를 위한 어댑터, 어댑터의 생성자.
      */
-    public PagerInToolBarAdapter(FragmentManager fm, int resArr[]) {
+//    public PagerInToolBarAdapter(FragmentManager fm, int resArr[]) {
+//        super(fm);
+//        this.resArr = resArr;
+//    }
+
+    public PagerInToolBarAdapter(FragmentManager fm, List<String> imgList) {
         super(fm);
-        this.resArr = resArr;
+        this.imgList = imgList;
     }
 
     /**
@@ -39,13 +48,14 @@ public class PagerInToolBarAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Fragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putInt(ImageFragment.ARG_OBJECTS_IMAGE, resArr[position%resArr.length]);
+//        args.putInt(ImageFragment.ARG_OBJECTS_IMAGE, resArr[position%resArr.length]);
+        args.putString(ImageFragment.ARG_OBJECTS_IMAGE_LIST, imgList.get(position%imgList.size()));
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public int getCount() {
-        return resArr.length;
+        return imgList.size();
     }
 } // end of class

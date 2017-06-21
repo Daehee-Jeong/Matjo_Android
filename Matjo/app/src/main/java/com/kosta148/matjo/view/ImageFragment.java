@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.kosta148.matjo.R;
 
 /**
@@ -17,6 +18,7 @@ import com.kosta148.matjo.R;
 
 public class ImageFragment extends Fragment {
     public static final String ARG_OBJECTS_IMAGE = "imageResId";
+    public static final String ARG_OBJECTS_IMAGE_LIST = "imageList";
     AppCompatActivity scrollingActivity; // 부모 액티비티
     ImageView imageView;
 
@@ -30,7 +32,7 @@ public class ImageFragment extends Fragment {
 
         // 이미지 셋팅
         imageView = (ImageView) v.findViewById(R.id.imageView01);
-        imageView.setImageResource(args.getInt(ARG_OBJECTS_IMAGE));
+        Glide.with(getActivity()).load(args.getString(ARG_OBJECTS_IMAGE_LIST)).thumbnail(0.1f).error(R.drawable.ic_no_image_large).into(imageView);
 
         return v;
     }

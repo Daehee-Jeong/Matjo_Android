@@ -47,6 +47,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -72,6 +73,7 @@ public class GroupDetailActivity extends AppCompatActivity {
     ActionBar actionBar;
 
     Bitmap bitmap;
+    List<String> imgList = new ArrayList<String>();
 
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
@@ -92,6 +94,8 @@ public class GroupDetailActivity extends AppCompatActivity {
         groupBean = (GroupBean)intent.getSerializableExtra("gBean");
         // TODO reviewBean도 받아오자
         ArrayList<ReviewBean> reviewList = intent.getParcelableArrayListExtra("reviewList");
+
+        imgList.add(groupBean.getGroupImg());
 
         Log.d("MyLog", "값 받음 ; "+groupBean.getGroupName());
         if (reviewList != null && reviewList.size() > 0) {
@@ -120,7 +124,7 @@ public class GroupDetailActivity extends AppCompatActivity {
         // 2. 뷰페이저 객체 생성
         viewPagerInToolbar = (ViewPager) findViewById(R.id.viewPagerInToolbar);
         // 3. 페이저어댑터 생성 및 뷰페이저에 연결
-        pagerInToolBarAdapter = new PagerInToolBarAdapter(getSupportFragmentManager(), resArr);
+        pagerInToolBarAdapter = new PagerInToolBarAdapter(getSupportFragmentManager(), imgList);
         viewPagerInToolbar.setAdapter(pagerInToolBarAdapter);
         // 4. 리스너 등록
         viewPagerInToolbar.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

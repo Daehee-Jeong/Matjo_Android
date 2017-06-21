@@ -45,6 +45,7 @@ import com.kosta148.matjo.data.DaumLocalBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RestaDetailActivity extends AppCompatActivity {
@@ -53,6 +54,9 @@ public class RestaDetailActivity extends AppCompatActivity {
     int resArr[] = {
             R.drawable.img01, R.drawable.img02, R.drawable.img03, R.drawable.img04, R.drawable.img05, R.drawable.img06,
     };
+
+    List<String> imgList = new ArrayList<String>();
+
     // 변경시킬 타이틀 명 (업소 이름)
     String name = "가산 철파니야";
     TextView tvScrollingIndex;
@@ -123,6 +127,8 @@ public class RestaDetailActivity extends AppCompatActivity {
         dlBean = (DaumLocalBean) intent.getSerializableExtra("dlBean");
         ArrayList<ReviewBean> reviewList = intent.getParcelableArrayListExtra("reviewList");
 
+        imgList.add(dlBean.getRestaImgUrl());
+
         restaId = dlBean.getRestaId();
         restaTitle = dlBean.getRestaTitle();
         restaCate = dlBean.getRestaCate();
@@ -158,7 +164,7 @@ public class RestaDetailActivity extends AppCompatActivity {
         // 2. 뷰페이저 객체 생성
         viewPagerInToolbar = (ViewPager) findViewById(R.id.viewPagerInToolbar);
         // 3. 페이저어댑터 생성 및 뷰페이저에 연결
-        pagerInToolBarAdapter = new PagerInToolBarAdapter(getSupportFragmentManager(), resArr);
+        pagerInToolBarAdapter = new PagerInToolBarAdapter(getSupportFragmentManager(), imgList);
         viewPagerInToolbar.setAdapter(pagerInToolBarAdapter);
         // 4. 리스너 등록
         viewPagerInToolbar.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -166,7 +172,7 @@ public class RestaDetailActivity extends AppCompatActivity {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
             @Override
             public void onPageSelected(int position) {
-                tvScrollingIndex.setText((position + 1) + " / " + (resArr.length));
+                tvScrollingIndex.setText((position + 1) + " / " + (imgList.size()));
             }
             @Override
             public void onPageScrollStateChanged(int state) {}
@@ -184,6 +190,7 @@ public class RestaDetailActivity extends AppCompatActivity {
 
         // 모임장에 따라 리뷰버튼 체크
         checkLeaderVolley();
+        searchImg(dlBean);
     } // end of onCreate
 
     @Override
@@ -406,6 +413,44 @@ public class RestaDetailActivity extends AppCompatActivity {
                 return params;
             }
         };
+        requestQueue.add(stringRequest);
+    }
+
+    // 이미지 검색해오기
+    public void searchImg(DaumLocalBean dlBean) {
+        String apikey = "492681c0a9510ba0b05faa8fa5d8a6bb";
+        String q = dlBean.getRestaTitle();
+        String result = "5";
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://apis.daum.net/search/image?apikey=" + apikey + "&q=" + q + "&output=json&result=" + result, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+                JsonObject channel = rootObj.get("channel").getAsJsonObject();
+                JsonArray item = channel.get("item").getAsJsonArray();
+
+                for (int i = 0; i < item.size(); i++) {
+                    JsonObject imgObj = item.get(i).getAsJsonObject();
+                    String imgUrl = imgObj.get("image").getAsString();
+                    imgList.add(imgUrl);
+                }
+                if (pagerInToolBarAdapter != null) pagerInToolBarAdapter.notifyDataSetChanged();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
         requestQueue.add(stringRequest);
     }
 } // end of class

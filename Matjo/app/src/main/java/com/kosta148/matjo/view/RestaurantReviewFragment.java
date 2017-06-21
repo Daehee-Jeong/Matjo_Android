@@ -77,11 +77,8 @@ public class RestaurantReviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_restaurant_review, container, false);
 
-        try {
-            reviewList = getArguments().getParcelableArrayList("reviewList");
-        } catch(NullPointerException e) {
-            reviewList = new ArrayList<ReviewBean>();
-        }
+        reviewList = getArguments().getParcelableArrayList("reviewList");
+        if (reviewList == null) reviewList = new ArrayList<ReviewBean>();
 
         sharedPreferences = getContext().getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
         Gson gson = new Gson();
