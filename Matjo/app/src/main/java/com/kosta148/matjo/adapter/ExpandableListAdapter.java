@@ -12,13 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.util.RoundedDrawable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -80,7 +84,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         switch (type) {
             case HEADER:
-                view = inflater.inflate(R.layout.list_header, parent, false);
+                view = inflater.inflate(R.layout.list_header_group_review, parent, false);
                 ListHeaderViewHolder header = new ListHeaderViewHolder(view);
 
                 if(isMember){
@@ -98,7 +102,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 //                                ViewGroup.LayoutParams.WRAP_CONTENT));
 //                return new RecyclerView.ViewHolder(itemTextView) {
 //                };
-                view = inflater.inflate(R.layout.list_child, parent, false);
+                view = inflater.inflate(R.layout.list_child_group_review, parent, false);
                 ListChildViewHolder child = new ListChildViewHolder(view);
                 return child;
         }
@@ -114,7 +118,14 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 final ListHeaderViewHolder headerViewHolder = (ListHeaderViewHolder) holder;
                 headerViewHolder.refferalItem = item;
                 headerViewHolder.header_title.setText(item.title);
-                headerViewHolder.header_profile.setImageDrawable(rd);
+//                headerViewHolder.header_profile.setImageDrawable(rd);
+                Glide.with(context).load(item.imgProfile)
+                        .bitmapTransform(new CropCircleTransformation(new CustomBitmapPool()))
+                        .thumbnail(0.1f)
+                        .error(R.mipmap.ic_launcher)
+                        .into(headerViewHolder.header_profile);
+                headerViewHolder.header_rating.setText(item.rating+"");
+                headerViewHolder.ratingBarAvg.setRating((float) item.rating);
 
                 // 회원일때만 개인리뷰 작성 / 기존 개인리뷰 작성 안했으면 작성
                 List<Item> childList = data.get(position).invisibleChildren;
@@ -122,7 +133,7 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 // 개인 리뷰 작성했는지 여부 확인
                 for (int i = 0; i < childList.size(); i++) {
                     String itemContent = childList.get(i).content;
-                    String memberName = itemContent.substring(0, itemContent.indexOf(':'));
+                    String memberName = childList.get(i).title;
                     Log.d("MyLog", "memberName is <" + memberName + ">");
                     if (loginName.equals(memberName)) {
                         Log.d("MyLog", "you have already written review " + position);
@@ -178,10 +189,23 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 });
                 break;
             case CHILD:
-                final ListChildViewHolder childViewHolder = (ListChildViewHolder) holder;
+                final ExpandableListAdapter.ListChildViewHolder childViewHolder = (ExpandableListAdapter.ListChildViewHolder) holder;
                 childViewHolder.refferalItem = item;
+
+                childViewHolder.child_member_id.setText(item.title);
                 childViewHolder.child_content.setText(item.content);
-                childViewHolder.child_img.setImageResource(item.imgReview);
+                childViewHolder.child_rating.setText(item.rating+"");
+                childViewHolder.ratingBar.setRating((float) item.rating);
+
+//                childViewHolder.child_img.setImageResource(item.imgReview);
+                Glide.with(context).load(item.imgProfile)
+                        .thumbnail(0.1f)
+                        .error(R.mipmap.ic_launcher)
+                        .into(childViewHolder.child_profile);
+                Glide.with(context).load(item.imgReview)
+                        .thumbnail(0.1f)
+                        .error(R.mipmap.ic_launcher)
+                        .into(childViewHolder.child_img);
                 break;
         }
     }
@@ -199,8 +223,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     // 헤더 뷰홀더
     private static class ListHeaderViewHolder extends RecyclerView.ViewHolder {
         public TextView header_title;
-        public ImageView btn_expand_toggle;
         public ImageView header_profile;
+        public ImageView btn_expand_toggle;
+        public TextView header_rating;
+        public RatingBar ratingBarAvg;
         public Button header_pereviw;
         public Item refferalItem;
 
@@ -208,9 +234,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             super(itemView);
             header_title = (TextView) itemView.findViewById(R.id.header_title);
             header_profile = (ImageView) itemView.findViewById(R.id.header_profile);
-            header_pereviw = (Button) itemView.findViewById(R.id.btnInsertPereview);
             btn_expand_toggle = (ImageView) itemView.findViewById(R.id.btn_expand_toggle);
-
+            header_rating = (TextView) itemView.findViewById(R.id.header_rating);
+            ratingBarAvg = (RatingBar) itemView.findViewById(R.id.ratingBarAvg);
+            header_pereviw = (Button) itemView.findViewById(R.id.btnInsertPereview);
         }
     } // end of class
 
@@ -219,19 +246,27 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         public TextView child_content;
         public ImageView child_img;
         public Item refferalItem;
+        public ImageView child_profile;
+        public TextView child_rating;
+        public TextView child_member_id;
+        public RatingBar ratingBar;
 
         public ListChildViewHolder(View itemView) {
             super(itemView);
             child_content = (TextView) itemView.findViewById(R.id.child_content);
             child_img = (ImageView) itemView.findViewById(R.id.child_img);
+            child_profile = (ImageView) itemView.findViewById(R.id.child_member_profile);
+            child_rating = (TextView) itemView.findViewById(R.id.child_rating_tv);
+            ratingBar = (RatingBar) itemView.findViewById(R.id.ratingBar);
+            child_member_id = (TextView) itemView.findViewById(R.id.child_member_id);
         }
     } // end of class
 
     public static class Item {
         public int type;
         public String title;
-        public int imgProfile;
-        public int imgReview;
+        public String imgProfile;
+        public String imgReview;
         public String content;
         public double rating;
         public List<Item> invisibleChildren;
@@ -240,18 +275,21 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
 
         // 헤더 아이템일 경우 사용하는 생성자
-        public Item(int type, String title, int imgResId, double rating) {
+        public Item(int type, String title, String imgProfile, double rating) {
             this.type = type;
             this.title = title;
-            this.imgProfile = imgResId;
+            this.imgProfile = imgProfile;
             this.rating = rating;
         }
 
         // 자식 아이템일 경우 사용하는 생성자
-        public Item(int type, String content, int imgReview) {
+        public Item(int type, String title, String content, String imgProfile, String imgReview, double rating) {
             this.type = type;
             this.content = content;
             this.imgReview = imgReview;
+            this.title = title;
+            this.imgProfile = imgProfile;
+            this.rating = rating;
         }
     } // end of class Item
 

@@ -33,6 +33,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.ExpandableListAdapter;
+import com.kosta148.matjo.adapter.RestaExpandableListAdapter;
 import com.kosta148.matjo.bean.GroupBean;
 import com.kosta148.matjo.bean.PereviewBean;
 import com.kosta148.matjo.bean.ReviewBean;
@@ -133,13 +134,17 @@ public class GroupReviewFragment extends Fragment {
 
         for (int i = 0; i < reviewList.size(); i++) {
             // TODO 업소 이미지 받아올 수 있나요?
-            ExpandableListAdapter.Item placeTmp = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), R.drawable.profile, Double.valueOf(reviewList.get(i).getAvgRating()));
+            double ratingAvg = 0.0;
+            if (!Double.isNaN(Double.parseDouble(reviewList.get(i).getAvgRating()))) ratingAvg = Double.parseDouble(reviewList.get(i).getAvgRating());
+            ExpandableListAdapter.Item placeTmp = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), "http://blogfiles1.naver.net/20140628_246/baseon_1403916116658pykLg_PNG/%B9%AB%B7%E1%BE%C6%C0%CC%C4%DC_%B8%C6%B5%B5%B3%AF%B5%E5.png", ratingAvg);
             placeTmp.invisibleChildren = new ArrayList<>();
             List<PereviewBean> perTmpList = reviewList.get(i).getPereviewList();
             int perSize = perTmpList.size();
             for (int j = 0; j < perSize; j++) {
                 PereviewBean perTmp = perTmpList.get(j);
-                placeTmp.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, perTmp.getPereviewMemName()+":"+perTmp.getPereviewContent(), R.drawable.img06));
+                double rating = 0.0;
+                if (!Double.isNaN(Double.parseDouble(perTmp.getPereviewRating()))) rating = Double.parseDouble(perTmp.getPereviewRating());
+                placeTmp.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, perTmp.getPereviewMemName(), perTmp.getPereviewContent(), perTmp.getPereviewMemImg(), perTmp.getPereviewImgUrl(), rating));
             }
             data.add(placeTmp);
         }
@@ -195,6 +200,47 @@ public class GroupReviewFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
+    public void sendPush(final GroupBean groupBean) {
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/push/sendPushToGroup.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+                    Log.d("MyLog", "푸시전송 성공");
+                } else {
+                    Log.d("MyLog", "푸시전송 실패");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity().getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("groupNo", groupBean.getGroupNo());
+                params.put("pushType", "3");
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+
     // 개인리뷰 등록 서버연동
     public void insertPereviewVolley() {
 
@@ -210,6 +256,7 @@ public class GroupReviewFragment extends Fragment {
 
                 if ("ok".equals(resultData)) {
                     callGroupDetail();
+                    sendPush(groupBean);
                     Toast.makeText(getContext(), "개인리뷰를 작성하였습니다.", Toast.LENGTH_SHORT).show();
                 } else {
                 }

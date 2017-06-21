@@ -79,7 +79,9 @@ public class RestaurantReviewFragment extends Fragment {
 
         for (int i = 0; i < reviewList.size(); i++) {
             // TODO 업소 이미지 받아올 수 있나요?
-            RestaExpandableListAdapter.Item placeTmp = new RestaExpandableListAdapter.Item(RestaExpandableListAdapter.HEADER, reviewList.get(i).getReviewGroupName(), "http://blogfiles1.naver.net/20140628_246/baseon_1403916116658pykLg_PNG/%B9%AB%B7%E1%BE%C6%C0%CC%C4%DC_%B8%C6%B5%B5%B3%AF%B5%E5.png", Double.valueOf(reviewList.get(i).getAvgRating()));
+            double ratingAvg = 0.0;
+            if (!Double.isNaN(Double.parseDouble(reviewList.get(i).getAvgRating()))) ratingAvg = Double.parseDouble(reviewList.get(i).getAvgRating());
+            RestaExpandableListAdapter.Item placeTmp = new RestaExpandableListAdapter.Item(RestaExpandableListAdapter.HEADER, reviewList.get(i).getReviewGroupName(), "http://blogfiles1.naver.net/20140628_246/baseon_1403916116658pykLg_PNG/%B9%AB%B7%E1%BE%C6%C0%CC%C4%DC_%B8%C6%B5%B5%B3%AF%B5%E5.png", ratingAvg);
             placeTmp.invisibleChildren = new ArrayList<>();
             List<PereviewBean> perTmpList = reviewList.get(i).getPereviewList();
             int perSize = perTmpList.size();

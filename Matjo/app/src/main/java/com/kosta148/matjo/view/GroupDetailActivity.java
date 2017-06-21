@@ -277,7 +277,7 @@ public class GroupDetailActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("groupNo", groupBean.getGroupLeader());
+                params.put("memberId", groupBean.getGroupLeader());
                 params.put("pushType", "1");
                 return params;
             }
