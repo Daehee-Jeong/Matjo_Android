@@ -70,7 +70,7 @@ public class RestaDetailActivity extends AppCompatActivity {
     DaumLocalBean dlBean;
 
     // 리뷰등록 버튼
-    Button btnInsertReview;
+    FloatingActionButton fab;
 
     // 모임장의 모임리스트
     ArrayList<GroupBean> groupList;
@@ -110,15 +110,6 @@ public class RestaDetailActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // 리뷰 등록버튼
-        btnInsertReview = (Button)findViewById(R.id.btnInsertReview);
-
-        btnInsertReview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDialog(DIALOG_SHOW_REVIEW);
-            }
-        });
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences("LoginSetting.dat", MODE_PRIVATE);
 
@@ -148,16 +139,18 @@ public class RestaDetailActivity extends AppCompatActivity {
         tvScrollingIndex = (TextView) findViewById(R.id.tvScrollingIndex);
         tvScrollingIndex.setText("1 / " + (resArr.length));
 
-        // 플로팅 액션 버튼 (보류)
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        // 플로팅 액션 버튼 (리뷰등록)
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
                 /* 전화하기 기능 구현 */
+                showDialog(DIALOG_SHOW_REVIEW);
             }
         });
+        fab.hide();
 
         /** 툴바 내 뷰페이저 구현 **/
         // 1. 다량의 데이터 : 멤버변수 resArr
@@ -291,7 +284,7 @@ public class RestaDetailActivity extends AppCompatActivity {
 
                 String resultData = rootObj.get("result").getAsString();
                 if ("success".equals(resultData)) {
-                    btnInsertReview.setVisibility(View.VISIBLE);
+                    fab.show();
                 } else {
                 }
             }

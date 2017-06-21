@@ -211,6 +211,9 @@ public class GroupDetailActivity extends AppCompatActivity {
 
                 if ("success".equals(resultData)) {
                     Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_SHORT).show();
+
+                    // 가입신청이 성공적으로 완료시 해당 모임의 모임장에게 푸쉬알림을 보낸다.
+                    sendPush(groupBean);
                 } else {
                     Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_SHORT).show();
                 }
@@ -235,6 +238,47 @@ public class GroupDetailActivity extends AppCompatActivity {
                 params.put("groupNo", groupBean.getGroupNo());
                 params.put("applyContent", etContent.getText().toString());
 
+                return params;
+            }
+        };
+        requestQueue.add(stringRequest);
+    }
+
+    public void sendPush(final GroupBean groupBean) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/push/sendPush.do", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                JsonParser parser = new JsonParser();
+                JsonObject rootObj = (parser.parse(response)).getAsJsonObject();
+
+                Gson gson = new Gson();
+
+                String resultData = rootObj.get("result").getAsString();
+                if ("success".equals(resultData)) {
+                    Log.d("MyLog", "푸시전송 성공");
+                } else {
+                    Log.d("MyLog", "푸시전송 실패");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("MyLog", "error : " + error);
+                final VolleyError err = error;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("groupNo", groupBean.getGroupLeader());
+                params.put("pushType", "1");
                 return params;
             }
         };

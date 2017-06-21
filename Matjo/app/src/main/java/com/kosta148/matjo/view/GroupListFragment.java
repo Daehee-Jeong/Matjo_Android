@@ -155,42 +155,49 @@ public class GroupListFragment extends Fragment {
                 final String res = response;
                 // JSON 1차 파싱
                 JsonObject root = new JsonParser().parse(res).getAsJsonObject();
-                // 모임 정보
-                JsonObject groupJSObject = root.get("gBean").getAsJsonObject();
-                // 리뷰 목록
-                JsonArray reviewListJSArray = root.get("reviewList").getAsJsonArray();
-                Gson gson = new Gson();
 
-                // 모임 정보
-                final GroupBean gBean = gson.fromJson(groupJSObject, GroupBean.class);
-                // 모임 리뷰 목록
-                final ArrayList<ReviewBean> reviewBeanList = gson.fromJson(reviewListJSArray.toString(), new TypeToken<ArrayList<ReviewBean>>() {
-                }.getType());
-                // 개인 리뷰 목록 - 모임 리뷰에 추가
-                for (int i = 0; i < reviewListJSArray.size(); i++) {
-                    Log.d("MyLog", "PERREVIEW 추가중~ " + i);
-                    JsonObject reviewJSObject = reviewListJSArray.get(i).getAsJsonObject();
-                    JsonArray pereviewJSArray = reviewJSObject.get("pereviewList").getAsJsonArray();
-                    reviewBeanList.get(i).setPereviewJSArray(pereviewJSArray.toString());
+                // 결과 확인
+                String result = root.get("result").getAsString();
+                String resultMsg = root.get("resultMsg").getAsString();
+
+                if (!"fail".equals(result)) {
+                    // 모임 정보
+                    JsonObject groupJSObject = root.get("gBean").getAsJsonObject();
+                    // 리뷰 목록
+                    JsonArray reviewListJSArray = root.get("reviewList").getAsJsonArray();
+                    Gson gson = new Gson();
+
+                    // 모임 정보
+                    final GroupBean gBean = gson.fromJson(groupJSObject, GroupBean.class);
+                    // 모임 리뷰 목록
+                    final ArrayList<ReviewBean> reviewBeanList = gson.fromJson(reviewListJSArray.toString(), new TypeToken<ArrayList<ReviewBean>>() {
+                    }.getType());
+                    // 개인 리뷰 목록 - 모임 리뷰에 추가
+                    for (int i = 0; i < reviewListJSArray.size(); i++) {
+                        Log.d("MyLog", "PERREVIEW 추가중~ " + i);
+                        JsonObject reviewJSObject = reviewListJSArray.get(i).getAsJsonObject();
+                        JsonArray pereviewJSArray = reviewJSObject.get("pereviewList").getAsJsonArray();
+                        reviewBeanList.get(i).setPereviewJSArray(pereviewJSArray.toString());
 //                    ArrayList<PereviewBean> pereviewBeanList = gson.fromJson(pereviewJSArray.toString(), new TypeToken<ArrayList<PereviewBean>>(){}.getType());
 //                    reviewBeanList.get(i).setPereviewList(pereviewBeanList);
 //                    if (pereviewBeanList != null) {
 //                        Log.d("MyLog", "PEREVIEW 값들어감 : "+pereviewBeanList.size());
 //                    }
-                }
-
-                Log.d("MyLog", "send Start");
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // 성공 시 값 보내주면서 모임 상세정보 액티비티 열어주기
-                        Intent intent = new Intent(mainActivity.getApplicationContext(), GroupDetailActivity.class);
-                        intent.putExtra("gBean", gBean);
-                        intent.putParcelableArrayListExtra("reviewList", reviewBeanList);
-                        mainActivity.startActivity(intent);
                     }
-                });
-                Log.e("MyLog", "send Finish");
+
+                    Log.d("MyLog", "send Start");
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 성공 시 값 보내주면서 모임 상세정보 액티비티 열어주기
+                            Intent intent = new Intent(mainActivity.getApplicationContext(), GroupDetailActivity.class);
+                            intent.putExtra("gBean", gBean);
+                            intent.putParcelableArrayListExtra("reviewList", reviewBeanList);
+                            mainActivity.startActivity(intent);
+                        }
+                    });
+                    Log.e("MyLog", "send Finish");
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -237,26 +244,33 @@ public class GroupListFragment extends Fragment {
                 final String res = response;
                 // JSON 1차 파싱
                 JsonObject root = new JsonParser().parse(res).getAsJsonObject();
-                // 내 모임 목록
-                JsonArray groupListJSArray = root.get("groupList").getAsJsonArray();
-                Gson gson = new Gson();
+                Log.d("MyLog", "1차파싱: "+root.toString());
 
-                // 내 모임 목록
-                final ArrayList<GroupBean> groupListTmp = gson.fromJson(groupListJSArray.toString(), new TypeToken<ArrayList<GroupBean>>() {
-                }.getType());
+                String result = root.get("result").getAsString();
+                String resultMsg = root.get("resultMsg").getAsString();
 
-                Log.d("MyLog", "send Start");
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // 성공 시 그리드뷰에 값 추가
-                        for (int i = 0; i < groupListTmp.size(); i++) {
-                            groupList.add(groupListTmp.get(i));
+                if (!"fail".equals(resultMsg) && result!=null && root.get("groupList")!=null) {
+                    // 내 모임 목록
+                    JsonArray groupListJSArray = root.get("groupList").getAsJsonArray();
+                    Gson gson = new Gson();
+
+                    // 내 모임 목록
+                    final ArrayList<GroupBean> groupListTmp = gson.fromJson(groupListJSArray.toString(), new TypeToken<ArrayList<GroupBean>>() {
+                    }.getType());
+
+                    Log.d("MyLog", "send Start");
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 성공 시 그리드뷰에 값 추가
+                            for (int i = 0; i < groupListTmp.size(); i++) {
+                                groupList.add(groupListTmp.get(i));
+                            }
+                            groupListAdapter.notifyDataSetChanged();
                         }
-                        groupListAdapter.notifyDataSetChanged();
-                    }
-                });
-                Log.e("MyLog", "send Finish");
+                    });
+                    Log.e("MyLog", "send Finish");
+                }
             }
         }, new Response.ErrorListener() {
             @Override

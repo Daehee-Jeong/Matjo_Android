@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 //        toolbarTitle.setText("지역을 추가해주세요");
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(android.R.drawable.ic_dialog_email);
+        fab.setImageResource(R.mipmap.ic_notifications_white_36dp);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -391,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
                 if (notiVisiblity) { // 뉴스피드 화면일때의 아이콘 설정
                     fab.setImageResource(R.mipmap.ic_launcher);
                 } else { // 뉴스피드 화면이 아닐때의 아이콘 설정
-                    fab.setImageResource(R.mipmap.ic_launcher);
+                    fab.setImageResource(R.mipmap.ic_notifications_white_36dp);
                 }
                 fab.startAnimation(fabAnimInflate);
             }
