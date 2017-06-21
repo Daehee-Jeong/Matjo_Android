@@ -348,7 +348,6 @@ public class LoginFormActivity extends AppCompatActivity {
         etId = (EditText) findViewById(R.id.etId);
         etPassword = (EditText) findViewById(R.id.etPassword);
         checkBoxAutoLogin = (CheckBox) findViewById(R.id.checkBoxAutoLogin);
-        btnKakaoLogin = (Button) findViewById(R.id.btnKakaoLogin);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         tvNotMember = (TextView) findViewById(R.id.tvNotMember);
         tvPasswordFinder = (TextView) findViewById(R.id.tvPasswordFinder);
