@@ -40,6 +40,7 @@ import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
 import com.kosta148.matjo.adapter.PagerInRestaDetailAdapter;
 import com.kosta148.matjo.bean.GroupBean;
+import com.kosta148.matjo.bean.ReviewBean;
 import com.kosta148.matjo.data.DaumLocalBean;
 
 import java.util.ArrayList;
@@ -120,6 +121,8 @@ public class RestaDetailActivity extends AppCompatActivity {
         // 받아온 인텐트 꺼냄
         Intent intent = getIntent();
         dlBean = (DaumLocalBean) intent.getSerializableExtra("dlBean");
+        ArrayList<ReviewBean> reviewList = intent.getParcelableArrayListExtra("reviewList");
+
         restaId = dlBean.getRestaId();
         restaTitle = dlBean.getRestaTitle();
         restaCate = dlBean.getRestaCate();
@@ -173,7 +176,7 @@ public class RestaDetailActivity extends AppCompatActivity {
         // 1. 뷰페이저 생성
         viewPagerMain = (ViewPager) findViewById(R.id.viewPagerMain);
         // 2. 어댑터 생성 및 페이저에 등록
-        pagerInRestaDetailAdapter = new PagerInRestaDetailAdapter(getSupportFragmentManager(), dlBean);
+        pagerInRestaDetailAdapter = new PagerInRestaDetailAdapter(getSupportFragmentManager(), dlBean, reviewList);
         viewPagerMain.setAdapter(pagerInRestaDetailAdapter);
         // 3. 탭 인디케이터 생성 및 페이저에 연결
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabStrip);
