@@ -1,16 +1,12 @@
 package com.kosta148.matjo.adapter;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.kosta148.matjo.R;
-import com.kosta148.matjo.data.DaumLocalBean;
 import com.kosta148.matjo.view.ImageFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,8 +16,8 @@ import java.util.List;
 public class PagerInToolBarAdapter extends FragmentStatePagerAdapter {
     // 다량의 데이터 (업소 사진들)
     int resArr[];
-    Bitmap bitmap;
     List<String> imgList;
+    String type = "";   // group 모임 / resta 맛집
     /**
      * 툴바 안에 있는 뷰페이저를 위한 어댑터, 어댑터의 생성자.
      */
@@ -30,25 +26,18 @@ public class PagerInToolBarAdapter extends FragmentStatePagerAdapter {
 //        this.resArr = resArr;
 //    }
 
-    public PagerInToolBarAdapter(FragmentManager fm, List<String> imgList) {
+    public PagerInToolBarAdapter(FragmentManager fm, List<String> imgList, String type) {
         super(fm);
         this.imgList = imgList;
+        this.type = type;
     }
 
-    /**
-     * 모임 툴바 이미지(하나밖에 안되고, 웹 url로 받아와야함) 받아오는 용도
-     * @param fm
-     * @param bitmap
-     */
-    public PagerInToolBarAdapter(FragmentManager fm, Bitmap bitmap) {
-        super(fm);
-        this.bitmap = bitmap;
-    }
     @Override
     public Fragment getItem(int position) {
         Fragment fragment = new ImageFragment();
         Bundle args = new Bundle();
 //        args.putInt(ImageFragment.ARG_OBJECTS_IMAGE, resArr[position%resArr.length]);
+        args.putString("type", type);
         args.putString(ImageFragment.ARG_OBJECTS_IMAGE_LIST, imgList.get(position%imgList.size()));
         fragment.setArguments(args);
         return fragment;

@@ -27,12 +27,17 @@ public class ImageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_image, container, false);
         Bundle args = getArguments();
+        String type = args.getString("type");   // group 모임 / resta 맛집
 
         scrollingActivity = (AppCompatActivity) getActivity();
 
         // 이미지 셋팅
         imageView = (ImageView) v.findViewById(R.id.imageView01);
-        Glide.with(getActivity()).load(args.getString(ARG_OBJECTS_IMAGE_LIST)).thumbnail(0.1f).error(R.drawable.ic_no_image_large).into(imageView);
+        String imgPath = args.getString(ARG_OBJECTS_IMAGE_LIST);
+        if ("group".equals(type)) {
+            imgPath = "http://ldh66210.cafe24.com/upload/" + imgPath;
+        }
+        Glide.with(getActivity()).load(imgPath).thumbnail(0.1f).error(R.drawable.ic_no_image_large).into(imageView);
 
         return v;
     }

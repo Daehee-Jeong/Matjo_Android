@@ -69,7 +69,7 @@ public class GroupListAdapter extends BaseAdapter {
 
         GroupBean gBean = (GroupBean) getItem(position);
         if (position != 0) {
-            Glide.with(context).load(gBean.getGroupImg())
+            Glide.with(context).load("http://ldh66210.cafe24.com/upload/"+gBean.getGroupImg())
                     .bitmapTransform(new CropCircleTransformation(new CustomBitmapPool()))
                     .thumbnail(0.1f)
                     .error(R.mipmap.ic_launcher)

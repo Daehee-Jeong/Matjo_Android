@@ -12,7 +12,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.util.RoundedDrawable;
 
@@ -80,7 +79,7 @@ public class RestaExpandableListAdapter extends RecyclerView.Adapter{
                 headerViewHolder.header_title.setText(item.title);
 //                headerViewHolder.header_profile.setImageDrawable(rd);
 
-                Glide.with(context).load(item.imgProfile)
+                Glide.with(context).load("http://ldh66210.cafe24.com/upload/"+item.imgProfile)
                         .bitmapTransform(new CropCircleTransformation(new CustomBitmapPool()))
                         .thumbnail(0.1f)
                         .error(R.drawable.ic_group)
@@ -131,7 +130,7 @@ public class RestaExpandableListAdapter extends RecyclerView.Adapter{
                 childViewHolder.ratingBar.setRating((float) item.rating);
 
 //                childViewHolder.child_img.setImageResource(item.imgReview);
-                Glide.with(context).load(item.imgProfile)
+                Glide.with(context).load("http://ldh66210.cafe24.com/upload/"+item.imgProfile)
                         .thumbnail(0.1f)
                         .error(R.drawable.default_profile)
                         .into(childViewHolder.child_profile);
@@ -139,7 +138,7 @@ public class RestaExpandableListAdapter extends RecyclerView.Adapter{
 
                 childViewHolder.child_img.setVisibility(View.VISIBLE);
                 if (item.imgProfile != null && !"".equals(item.imgProfile)) {
-                    Glide.with(context).load(item.imgReview)
+                    Glide.with(context).load("http://ldh66210.cafe24.com/upload/"+item.imgReview)
                             .thumbnail(0.1f)
                             .error(R.drawable.ic_no_image_large)
                             .into(childViewHolder.child_img);

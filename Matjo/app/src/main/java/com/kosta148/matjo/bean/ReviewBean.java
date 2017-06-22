@@ -8,6 +8,7 @@ import java.util.List;
 public class ReviewBean implements Parcelable{
 	
 	private String reviewNo;
+	private String reviewRestaImg;
 	private String reviewGroupImg;
 	private String reviewGroupNo;
 	private String reviewRestaNo;
@@ -40,6 +41,7 @@ public class ReviewBean implements Parcelable{
 
 	protected ReviewBean(Parcel in) {
 		reviewNo = in.readString();
+		reviewRestaImg = in.readString();
 		reviewGroupImg = in.readString();
 		reviewGroupNo = in.readString();
 		reviewRestaNo = in.readString();
@@ -60,6 +62,7 @@ public class ReviewBean implements Parcelable{
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(reviewNo);
+		dest.writeString(reviewRestaImg);
 		dest.writeString(reviewGroupImg);
 		dest.writeString(reviewGroupNo);
 		dest.writeString(reviewRestaNo);
@@ -209,5 +212,13 @@ public class ReviewBean implements Parcelable{
 
 	public void setReviewGroupImg(String reviewGroupImg) {
 		this.reviewGroupImg = reviewGroupImg;
+	}
+
+	public String getReviewRestaImg() {
+		return reviewRestaImg;
+	}
+
+	public void setReviewRestaImg(String reviewRestaImg) {
+		this.reviewRestaImg = reviewRestaImg;
 	}
 } // end of class

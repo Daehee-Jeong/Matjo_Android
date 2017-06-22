@@ -33,7 +33,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.adapter.ExpandableListAdapter;
-import com.kosta148.matjo.adapter.RestaExpandableListAdapter;
 import com.kosta148.matjo.bean.GroupBean;
 import com.kosta148.matjo.bean.PereviewBean;
 import com.kosta148.matjo.bean.ReviewBean;
@@ -133,10 +132,10 @@ public class GroupReviewFragment extends Fragment {
         data = new ArrayList<>();
 
         for (int i = 0; i < reviewList.size(); i++) {
-            // TODO 업소 이미지 받아올 수 있나요?
+            // 업소 이미지 받아옴 : reviewRestaImg
             double ratingAvg = 0.0;
             if (!Double.isNaN(Double.parseDouble(reviewList.get(i).getAvgRating()))) ratingAvg = Double.parseDouble(reviewList.get(i).getAvgRating());
-            ExpandableListAdapter.Item placeTmp = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), reviewList.get(i).getReviewGroupImg(), ratingAvg);
+            ExpandableListAdapter.Item placeTmp = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), reviewList.get(i).getReviewRestaImg(), ratingAvg);
             placeTmp.invisibleChildren = new ArrayList<>();
             List<PereviewBean> perTmpList = reviewList.get(i).getPereviewList();
             int perSize = perTmpList.size();

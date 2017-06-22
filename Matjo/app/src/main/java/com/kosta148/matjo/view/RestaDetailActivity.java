@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,8 +36,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
-import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
 import com.kosta148.matjo.adapter.PagerInRestaDetailAdapter;
+import com.kosta148.matjo.adapter.PagerInToolBarAdapter;
 import com.kosta148.matjo.bean.GroupBean;
 import com.kosta148.matjo.bean.ReviewBean;
 import com.kosta148.matjo.data.DaumLocalBean;
@@ -157,7 +156,7 @@ public class RestaDetailActivity extends AppCompatActivity {
         // 2. 뷰페이저 객체 생성
         viewPagerInToolbar = (ViewPager) findViewById(R.id.viewPagerInToolbar);
         // 3. 페이저어댑터 생성 및 뷰페이저에 연결
-        pagerInToolBarAdapter = new PagerInToolBarAdapter(getSupportFragmentManager(), imgList);
+        pagerInToolBarAdapter = new PagerInToolBarAdapter(getSupportFragmentManager(), imgList, "resta");
         viewPagerInToolbar.setAdapter(pagerInToolBarAdapter);
         // 4. 리스너 등록
         viewPagerInToolbar.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

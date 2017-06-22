@@ -200,14 +200,14 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 childViewHolder.ratingBar.setRating((float) item.rating);
 
 //                childViewHolder.child_img.setImageResource(item.imgReview);
-                Glide.with(context).load(item.imgProfile)
+                Glide.with(context).load("http://ldh66210.cafe24.com/upload/"+item.imgProfile)
                         .thumbnail(0.1f)
                         .error(R.drawable.default_profile)
                         .into(childViewHolder.child_profile);
 
                 childViewHolder.child_img.setVisibility(View.VISIBLE);
                 if (item.imgReview != null && !"".equals(item.imgReview)) {
-                    Glide.with(context).load(item.imgReview)
+                    Glide.with(context).load("http://ldh66210.cafe24.com/upload/"+item.imgReview)
                             .thumbnail(0.1f)
                             .error(R.drawable.ic_no_image_large)
                             .into(childViewHolder.child_img);
