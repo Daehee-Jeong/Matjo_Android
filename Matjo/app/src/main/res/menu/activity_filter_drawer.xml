@@ -1,39 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:title="누구랑">
-            <group
-                android:id="@+id/group1"
-                android:checkableBehavior="all">
-            <item
-                android:id="@+id/nav_solo"
-                android:title="혼자"/>
-            <item
-                android:id="@+id/nav_couple"
-                android:title="연인이랑"/>
-            <item
-                android:id="@+id/nav_family"
-                android:title="가족이랑"/>
-            <item
-                android:id="@+id/nav_coor"
-                android:title="직장사람들"/>
-            </group>
-    </item>
 
-    <item android:title="무엇을">
-            <group android:checkableBehavior="all">
+    <item android:title="모임검색">
+            <group android:checkableBehavior="single">
             <item
-                android:id="@+id/nav_korFood"
-                android:title="한식"/>
+                android:id="@+id/nav_all"
+                android:title="전체"
+                android:checked="true"/>
             <item
-                android:id="@+id/nav_westFood"
-                android:title="양식"/>
+                android:id="@+id/nav_group_name"
+                android:title="모임이름"/>
             <item
-                android:id="@+id/nav_japFood"
-                android:title="일식"/>
+                android:id="@+id/nav_group_leader"
+                android:title="모임장"/>
             <item
-                android:id="@+id/nav_chiFood"
-                android:title="중식"/>
+                android:id="@+id/nav_group_content"
+                android:title="모임소개"/>
             </group>
     </item>
 
