@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
 
     boolean autoSearched = false;
 
+    // 모임 검색 필터
+    String searchType = "";
+
     // SharedPreferences 선언
     private SharedPreferences sharedPreferences;
 
@@ -440,7 +443,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 2:
                     GroupListFragment glf = (GroupListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
-                    glf.searchGroup(searchText, 1);
+                    // 모임 검색 시 필터링 추가
+                    if (searchType == null || searchType.equals("")) {
+                        searchType = "all";
+                    }
+                    glf.searchGroup(searchText, searchType, 1);
                     break;
             }
             return false; // 정상적 처리 완료시 true 로 핸들링 완료를 표시한다.
@@ -507,6 +514,17 @@ public class MainActivity extends AppCompatActivity {
                         // TODO : 환경 설정 창
                         Intent intent = new Intent(context, SetupActivity.class );
                         startActivity(intent);
+                    }
+
+                    // 모임 검색 필터링 처리
+                    if (id == R.id.nav_all) {
+                        searchType = "all";
+                    } else if (id == R.id.nav_group_name) {
+                        searchType = "group_name";
+                    } else if (id == R.id.nav_group_leader) {
+                        searchType = "group_leader";
+                    } else if (id == R.id.nav_group_content) {
+                        searchType = "group_content";
                     }
 
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

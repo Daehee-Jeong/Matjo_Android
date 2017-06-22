@@ -52,6 +52,7 @@ public class GroupListFragment extends Fragment {
     GroupListAdapter groupListAdapter;
     int pageNo = 1;
     String searchText = "";
+    String searchType = "";
 
     // SharedPreferences
     private SharedPreferences sharedPreferences;
@@ -93,6 +94,11 @@ public class GroupListFragment extends Fragment {
             }
         }
     }; // end of ItemClickListener
+
+    public void searchGroup(String searchText, String searchType, int pageNo) {
+        this.searchType = searchType;
+        searchGroup(searchText, pageNo);
+    }
 
     public void searchGroup(final String searchText, final int pageNo) {
         this.searchText = searchText;
@@ -143,8 +149,8 @@ public class GroupListFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                // TODO 필터링에 따라 searchType변경해주기
-                params.put("searchType", "all");
+                // 필터링에 따라 searchType변경해주기
+                params.put("searchType", searchType);
                 params.put("searchText", searchText);
                 params.put("pageNo", -1+"");
                 return params;
