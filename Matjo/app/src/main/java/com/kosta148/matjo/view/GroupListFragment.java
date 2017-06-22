@@ -84,7 +84,8 @@ public class GroupListFragment extends Fragment {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (position == 0) {
                 // 0 번 인덱스는 항상 새모임 추가 버튼이다.
-                mainActivity.showToast("모임 추가");
+                Intent intent = new Intent(getActivity().getApplicationContext(), GroupInsertActivity.class);
+                startActivity(intent);
             } else {
                 GroupBean gBean = groupList.get(position);
                 mainActivity.showToast(gBean.getGroupNo()+":"+gBean.getGroupName());

@@ -187,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
         animFade = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
 
         if (sharedPreferences != null) {
-            showToast("로그인 ID: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_ID, "") +
-                    "\n로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, "") +
-                    "\n토큰: " + sharedPreferences.getString(SHAREDPREFERENCES_TOKEN, ""));
+//            showToast("로그인 ID: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_ID, "") +
+//                    "\n로그인 PW: " + sharedPreferences.getString(SHAREDPREFERENCES_LOGIN_PW, "") +
+//                    "\n토큰: " + sharedPreferences.getString(SHAREDPREFERENCES_TOKEN, ""));
         }
 
         sendToken();
@@ -560,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 Log.d("MyLog", "response : " + response);
-                showToast(response);
+//                showToast(response);
                 // 응답을 처리한다.
 
                 JsonParser parser = new JsonParser();

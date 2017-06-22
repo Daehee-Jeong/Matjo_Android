@@ -67,9 +67,9 @@ public class NotiListAdapter extends BaseAdapter {
 
         NewsFeedBean newsFeedBean = (NewsFeedBean) getItem(position);
 
-        String content = "모임 " +
+        String content = "모임 '" +
                             newsFeedBean.getGroupName() +
-                            "의 " +
+                            "'의 " +
                             newsFeedBean.getTypeMsg() +
                             "(" +
                             newsFeedBean.getRestaName() +

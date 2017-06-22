@@ -77,7 +77,7 @@ public class NotiFragment extends Fragment {
             @Override
             public void onResponse(String response) {
                 Log.d("MyLog", "response : " + response);
-                mainActivity.showToast(response);
+//                mainActivity.showToast(response);
                 // 응답을 처리한다.
 
                 JsonParser parser = new JsonParser();
@@ -92,7 +92,6 @@ public class NotiFragment extends Fragment {
                     JsonArray newsFeedListJSArray = rootObj.get("newsFeedList").getAsJsonArray();
 
                     if (newsFeedListJSArray != null && newsFeedListJSArray.size() > 0) {
-                        mainActivity.showToast("오케이");
                         for (int i = 0; i < newsFeedListJSArray.size(); i++) {
                             NewsFeedBean newsFeedBean = gson.fromJson(newsFeedListJSArray.get(i), NewsFeedBean.class);
                             newsFeedList.add(newsFeedBean);
@@ -103,7 +102,7 @@ public class NotiFragment extends Fragment {
                     // 실패
                 }
 
-                if ( (result != null) && ("fail".equals(result)) ) {
+                if ( (result == null) || ("fail".equals(result)) ) {
                     mainActivity.showToast("null 또는 fail: " + resultMsg);
                 } // 결과 메시지 토스트
             } // end of onResponse()

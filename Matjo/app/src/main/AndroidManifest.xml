@@ -91,6 +91,9 @@
             android:name=".view.SetupActivity"
             android:screenOrientation="portrait" />
 
+        <activity android:name=".view.GroupInsertActivity"
+            android:screenOrientation="portrait"></activity>
+
         <service
             android:name=".service.MyFirebaseMessagingService">
             <intent-filter>
