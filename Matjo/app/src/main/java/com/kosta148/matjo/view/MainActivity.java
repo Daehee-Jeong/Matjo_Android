@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setTag("mSearchView"); // OnFocusChangeListener 에서 mSearchView 를 구별하기위해 태그 등록
         mSearchView.setOnQueryTextListener(mQueryTextListener);
         mSearchView.setOnQueryTextFocusChangeListener(mFocusChangeListener);
+        mSearchView.setVisibility(View.INVISIBLE);
 
 //        toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
 //        toolbarTitle.setText("지역을 추가해주세요");
@@ -461,6 +462,13 @@ public class MainActivity extends AppCompatActivity {
                     mSearchView.onActionViewCollapsed();
                     mSearchView.setIconified(true);
                     ivLogo.setVisibility(View.VISIBLE);
+
+                    if (mainFragment.currentPos == 2) {
+                        // 내모임 목록을 다시 조회
+                        GroupListFragment glf = (GroupListFragment) mainFragment.mainFragmentPagerAdapter.getItem(mainFragment.currentPos);
+                        String memberNo = sharedPreferences.getString("memberNo", "");
+                        glf.callMyGroup(memberNo);
+                    }
                 }
             }
         } // end of onFocusChange
@@ -483,27 +491,22 @@ public class MainActivity extends AppCompatActivity {
                         // TODO : 프로모션 이동
                         Intent intent = new Intent(context, PromotionWebViewActivity.class );
                         startActivity(intent);
-                        finish();
                     } else if (id == R.id.nav_rank) {
                         // TODO : 모임 랭킹 이동
                         Intent intent = new Intent(context, GroupRankViewActivity.class );
                         startActivity(intent);
-                        finish();
                     } else if (id == R.id.nav_notice) {
                         // TODO : 공지 사항 창
                         Intent intent = new Intent(context, NoticeWebViewActivity.class );
                         startActivity(intent);
-                        finish();
                     } else if (id == R.id.nav_inquiry) {
                         // TODO : 고객의 소리 창
                         Intent intent = new Intent(context,InquiryWebViewActivity.class );
                         startActivity(intent);
-                        finish();
                     } else if (id == R.id.nav_setting) {
                         // TODO : 환경 설정 창
                         Intent intent = new Intent(context, SetupActivity.class );
                         startActivity(intent);
-                        finish();
                     }
 
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

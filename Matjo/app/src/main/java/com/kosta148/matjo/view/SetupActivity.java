@@ -12,6 +12,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.CompoundButton;
@@ -31,6 +32,9 @@ public class SetupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
         context = getApplicationContext();
+
+        getSupportActionBar().setTitle("환경설정");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //노티설정
         final NotificationCompat.Builder notiBuilder = new NotificationCompat.Builder(this)
@@ -73,5 +77,11 @@ public class SetupActivity extends AppCompatActivity {
                 //..............
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) finish();
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -79,11 +79,13 @@ public class RestaExpandableListAdapter extends RecyclerView.Adapter{
                 headerViewHolder.refferalItem = item;
                 headerViewHolder.header_title.setText(item.title);
 //                headerViewHolder.header_profile.setImageDrawable(rd);
+
                 Glide.with(context).load(item.imgProfile)
                         .bitmapTransform(new CropCircleTransformation(new CustomBitmapPool()))
                         .thumbnail(0.1f)
-                        .error(R.mipmap.ic_launcher)
+                        .error(R.drawable.ic_group)
                         .into(headerViewHolder.header_profile);
+
                 headerViewHolder.header_rating.setText(item.rating+"");
                 headerViewHolder.ratingBarAvg.setRating((float) item.rating);
 
@@ -131,12 +133,20 @@ public class RestaExpandableListAdapter extends RecyclerView.Adapter{
 //                childViewHolder.child_img.setImageResource(item.imgReview);
                 Glide.with(context).load(item.imgProfile)
                         .thumbnail(0.1f)
-                        .error(R.mipmap.ic_launcher)
+                        .error(R.drawable.default_profile)
                         .into(childViewHolder.child_profile);
-                Glide.with(context).load(item.imgReview)
-                        .thumbnail(0.1f)
-                        .error(R.mipmap.ic_launcher)
-                        .into(childViewHolder.child_img);
+
+
+                childViewHolder.child_img.setVisibility(View.VISIBLE);
+                if (item.imgProfile != null && !"".equals(item.imgProfile)) {
+                    Glide.with(context).load(item.imgReview)
+                            .thumbnail(0.1f)
+                            .error(R.drawable.ic_no_image_large)
+                            .into(childViewHolder.child_img);
+                } else {
+                    childViewHolder.child_img.setVisibility(View.GONE);
+                }
+
                 break;
         }
     }

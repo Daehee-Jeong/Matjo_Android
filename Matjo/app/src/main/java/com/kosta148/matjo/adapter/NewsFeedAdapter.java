@@ -52,7 +52,7 @@ public class NewsFeedAdapter extends BaseAdapter {
         ViewHolder viewHolder;
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.item_resta_list, parent, false);
+            convertView = inflater.inflate(R.layout.item_news_feed_list, parent, false);
 
             viewHolder = new ViewHolder();
             viewHolder.ivNewsImg = (ImageView)convertView.findViewById(R.id.ivRestaImg);

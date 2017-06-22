@@ -13,8 +13,9 @@
     
     <ImageView
         android:id="@+id/ivMember"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:padding="5dp"
         android:scaleType="fitCenter"
         android:src="@drawable/default_profile"/>
     
@@ -26,6 +27,6 @@
         android:layout_marginTop="20dp"
         android:layout_marginLeft="40dp"
         android:textColor="#222222"
-        android:textSize="30sp"/>
+        android:textSize="20sp"/>
 
 </RelativeLayout>

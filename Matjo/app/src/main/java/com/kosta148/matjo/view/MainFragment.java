@@ -48,12 +48,15 @@ public class MainFragment extends Fragment {
                 switch(position) {
                     case 0:
                         tabLayout.getTabAt(0).setIcon(R.mipmap.ic_news_feed_white_36dp_pressed);
+                        mainActivity.mSearchView.setVisibility(View.INVISIBLE);
                         break;
                     case 1:
                         tabLayout.getTabAt(1).setIcon(R.mipmap.ic_restaurant_white_36dp_pressed);
+                        mainActivity.mSearchView.setVisibility(View.VISIBLE);
                         break;
                     case 2:
                         tabLayout.getTabAt(2).setIcon(R.mipmap.ic_people_36dp_pressed);
+                        mainActivity.mSearchView.setVisibility(View.VISIBLE);
                         break;
                 } // end of switch
             } // end of pageSelected()

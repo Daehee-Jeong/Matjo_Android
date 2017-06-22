@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -60,7 +61,6 @@ public class LoginFormActivity extends AppCompatActivity {
     private TextView tvNotMember;
     private TextView tvPasswordFinder;
 
-
     // 다이얼로그 상수
     private static final int DIALOG_LOGIN_DIFFERENT = 1;
 
@@ -73,6 +73,7 @@ public class LoginFormActivity extends AppCompatActivity {
     private static final String SHAREDPREFERENCES_LOGIN_NAME = "LoginName";
     private static final String SHAREDPREFERENCES_LOGIN_IMAGE = "LoginImage";
     private static final String SHAREDPREFERENCES_MEMBER_NO = "memberNo";
+    private static final String SHAREDPREFERENCES_MEMBER_NAME = "memberName";
     private static final String SHAREDPREFERENCES_LOGIN_AUTO = "AutoLogin";
 
     // Handler 객체
@@ -324,6 +325,8 @@ public class LoginFormActivity extends AppCompatActivity {
         setContentView(R.layout.activity_loginform);
         activity = this;
 
+        getSupportActionBar().setTitle("로그인");
+
         mOAuthLoginButton = (OAuthLoginButton) findViewById(R.id.buttonOAuthLoginImg);
         mOAuthLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -449,6 +452,7 @@ public class LoginFormActivity extends AppCompatActivity {
                     editor.putString(SHAREDPREFERENCES_LOGIN_ID, etId.getText().toString());
                     editor.putString(SHAREDPREFERENCES_LOGIN_PW, etPassword.getText().toString());
                     editor.putString(SHAREDPREFERENCES_MEMBER_NO, mBean.getMemberNo());
+                    editor.putString(SHAREDPREFERENCES_MEMBER_NAME, mBean.getMemberName());
                     editor.commit(); // 변경사항을 저장하기
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);

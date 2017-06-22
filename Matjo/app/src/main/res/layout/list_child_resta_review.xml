@@ -19,7 +19,7 @@
         <ImageView
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/default_profile"
             android:id="@+id/child_member_profile"
             android:layout_width="25dp"
             android:layout_height="25dp"

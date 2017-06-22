@@ -68,6 +68,7 @@ public class GroupListFragment extends Fragment {
         groupListAdapter = new GroupListAdapter(mainActivity.getApplicationContext(),
                                                     R.layout.item_group_list,
                                                     groupList);
+
         gridView.setAdapter(groupListAdapter);
 
 
@@ -81,9 +82,14 @@ public class GroupListFragment extends Fragment {
     AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            GroupBean gBean = groupList.get(position);
-            mainActivity.showToast(gBean.getGroupNo()+":"+gBean.getGroupName());
-            callGroupDetail(gBean.getGroupNo());
+            if (position == 0) {
+                // 0 번 인덱스는 항상 새모임 추가 버튼이다.
+                mainActivity.showToast("모임 추가");
+            } else {
+                GroupBean gBean = groupList.get(position);
+                mainActivity.showToast(gBean.getGroupNo()+":"+gBean.getGroupName());
+                callGroupDetail(gBean.getGroupNo());
+            }
         }
     }; // end of ItemClickListener
 
@@ -92,6 +98,10 @@ public class GroupListFragment extends Fragment {
         this.pageNo = pageNo;
 
         groupList.clear();
+        GroupBean addGroupBean = new GroupBean();
+        addGroupBean.setGroupName("모임 추가");
+        addGroupBean.setGroupInfo("새 모임을 등록하세요");
+        groupList.add(addGroupBean);
 
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://ldh66210.cafe24.com/group/selectGroupListProc.do"
@@ -231,6 +241,11 @@ public class GroupListFragment extends Fragment {
     void callMyGroup(String memberNoParam) {
         // 내 모임 불러오기 전에 기존 리스트 초기화
         groupList.clear();
+
+        GroupBean addGroupBean = new GroupBean();
+        addGroupBean.setGroupName("모임 추가");
+        addGroupBean.setGroupInfo("새 모임을 등록하세요");
+        groupList.add(addGroupBean);
 
         final String memberNo = memberNoParam;
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity().getApplicationContext());

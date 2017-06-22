@@ -136,7 +136,7 @@ public class GroupReviewFragment extends Fragment {
             // TODO 업소 이미지 받아올 수 있나요?
             double ratingAvg = 0.0;
             if (!Double.isNaN(Double.parseDouble(reviewList.get(i).getAvgRating()))) ratingAvg = Double.parseDouble(reviewList.get(i).getAvgRating());
-            ExpandableListAdapter.Item placeTmp = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), "http://blogfiles1.naver.net/20140628_246/baseon_1403916116658pykLg_PNG/%B9%AB%B7%E1%BE%C6%C0%CC%C4%DC_%B8%C6%B5%B5%B3%AF%B5%E5.png", ratingAvg);
+            ExpandableListAdapter.Item placeTmp = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, reviewList.get(i).getReviewRestaName(), reviewList.get(i).getReviewGroupImg(), ratingAvg);
             placeTmp.invisibleChildren = new ArrayList<>();
             List<PereviewBean> perTmpList = reviewList.get(i).getPereviewList();
             int perSize = perTmpList.size();

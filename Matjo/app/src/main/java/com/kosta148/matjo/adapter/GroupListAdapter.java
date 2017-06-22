@@ -68,11 +68,17 @@ public class GroupListAdapter extends BaseAdapter {
         }
 
         GroupBean gBean = (GroupBean) getItem(position);
-        Glide.with(context).load(gBean.getGroupImg())
-                .bitmapTransform(new CropCircleTransformation(new CustomBitmapPool()))
-                .thumbnail(0.1f)
-                .error(R.mipmap.ic_launcher)
-                .into(viewHolder.ivGroupImg);
+        if (position != 0) {
+            Glide.with(context).load(gBean.getGroupImg())
+                    .bitmapTransform(new CropCircleTransformation(new CustomBitmapPool()))
+                    .thumbnail(0.1f)
+                    .error(R.mipmap.ic_launcher)
+                    .into(viewHolder.ivGroupImg);
+        } else {
+            // 0번이면 모임 추가 이미지를 보여준다
+            viewHolder.ivGroupImg.setImageResource(R.drawable.circle_plus);
+        }
+
         viewHolder.tvGroupName.setText(gBean.getGroupName());
         viewHolder.tvGroupInfo.setText(gBean.getGroupInfo());
         return convertView;

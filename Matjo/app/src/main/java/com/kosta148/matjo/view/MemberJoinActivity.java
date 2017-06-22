@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -79,6 +80,9 @@ public class MemberJoinActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memberjoin);
+
+        getSupportActionBar().setTitle("회원가입");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // xml 위젯 초기화
         etId = (EditText)findViewById(R.id.etId);
@@ -167,7 +171,7 @@ public class MemberJoinActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 spinnerCity.setSelection(position);
-                Toast.makeText(getApplicationContext(), "도시 : " + spinnerCity.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "도시 : " + spinnerCity.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
 
                 localList = new AddressLocalAPI().getList(spinnerCity.getSelectedItem().toString());
                 localArrayList = new ArrayList<String>();
@@ -182,7 +186,7 @@ public class MemberJoinActivity extends AppCompatActivity {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         spinnerLocal.setSelection(position);
-                        Toast.makeText(getApplicationContext(), "지역 : " + spinnerLocal.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "지역 : " + spinnerLocal.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
                     }
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
@@ -305,4 +309,9 @@ public class MemberJoinActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) finish();
+        return super.onOptionsItemSelected(item);
+    }
 } // end of class

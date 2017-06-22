@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -22,6 +23,9 @@ public class PromotionWebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_promotion);
         context = getApplicationContext();
+
+        getSupportActionBar().setTitle("프로모션");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         inquiryView = (WebView)findViewById(R.id.promotionWebView);
         //자바스트립트 사용 셋팅
@@ -53,5 +57,11 @@ public class PromotionWebViewActivity extends AppCompatActivity {
         @Override
         public void onPageFinished(WebView view, String url) {
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) finish();
+        return super.onOptionsItemSelected(item);
     }
 }

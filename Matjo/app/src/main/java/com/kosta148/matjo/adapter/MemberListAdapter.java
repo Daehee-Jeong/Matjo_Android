@@ -62,7 +62,7 @@ public class MemberListAdapter extends BaseAdapter {
         }
 
         MemberBean mBean = (MemberBean) getItem(position);
-        Glide.with(context).load(mBean.getMemberImg()).thumbnail(0.1f).error(R.drawable.ic_no_image_large).into(viewHolder.ivMemberimg);
+        Glide.with(context).load(R.drawable.default_profile).thumbnail(0.1f).error(R.drawable.ic_no_image_large).into(viewHolder.ivMemberimg);
         viewHolder.tvMemberName.setText(mBean.getMemberName());
 
         return convertView;

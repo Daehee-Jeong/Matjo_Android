@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -59,6 +60,9 @@ public class PasswordFinderActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passwordfinder);
+
+        getSupportActionBar().setTitle("비밀번호 찾기");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // xml 위젯 초기화
         etId = (EditText)findViewById(R.id.etId);
@@ -288,5 +292,11 @@ public class PasswordFinderActivity extends AppCompatActivity {
             }
         };
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) finish();
+        return super.onOptionsItemSelected(item);
     }
 } // end of class
