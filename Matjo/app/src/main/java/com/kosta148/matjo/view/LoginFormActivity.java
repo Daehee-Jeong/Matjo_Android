@@ -2,7 +2,6 @@ package com.kosta148.matjo.view;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,13 +10,11 @@ import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,19 +24,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.data.MemberBean;
-
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.OAuthLoginHandler;
-import com.nhn.android.naverlogin.OAuthLoginDefine;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
 
-
-import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -113,8 +105,8 @@ public class LoginFormActivity extends AppCompatActivity {
             } else {
                 String errorCode = mOAuthLoginModule.getLastErrorCode(getApplicationContext()).getCode();
                 String errorDesc = mOAuthLoginModule.getLastErrorDesc(getApplicationContext());
-                Toast.makeText(getApplicationContext(), "errorCode:" + errorCode
-                        + ", errorDesc:" + errorDesc, Toast.LENGTH_LONG).show();
+                Log.e("MyLog", "errorCode:" + errorCode
+                        + ", errorDesc:" + errorDesc);
             }
         };
     };
@@ -137,9 +129,8 @@ public class LoginFormActivity extends AppCompatActivity {
             Log.d("myLog", "nickname " + nickname);
 
             if (email == null) {
-                Toast.makeText(activity,
-                        "로그인 실패하였습니다.  잠시후 다시 시도해 주세요", Toast.LENGTH_SHORT)
-                        .show();
+                Log.e("MyLog",
+                        "로그인 실패하였습니다.  잠시후 다시 시도해 주세요");
             } else {
             }
         }
@@ -245,7 +236,7 @@ public class LoginFormActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog", "error : " + err);
                     }
                 });
             }
@@ -290,7 +281,7 @@ public class LoginFormActivity extends AppCompatActivity {
                     finish();
 
                 } else {
-                    Toast.makeText(getApplicationContext(),"네이버 아이디로 로그인 실패",Toast.LENGTH_SHORT).show();
+                    Log.e("MyLog", "네이버 아이디로 로그인 실패");
                 }
             }
         }, new Response.ErrorListener() {
@@ -301,7 +292,7 @@ public class LoginFormActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog","error : " + err);
                     }
                 });
             }
@@ -470,7 +461,7 @@ public class LoginFormActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog", "error : " + err);
                     }
                 });
             }

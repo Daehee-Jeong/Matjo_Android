@@ -3,7 +3,6 @@ package com.kosta148.matjo.view;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Address;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -31,7 +30,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kosta148.matjo.R;
 import com.kosta148.matjo.bean.AddressBean;
-import com.kosta148.matjo.data.MemberBean;
 import com.kosta148.matjo.util.AddressCityAPI;
 import com.kosta148.matjo.util.AddressLocalAPI;
 
@@ -286,7 +284,7 @@ public class MemberJoinActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog", "error : " + err);
                     }
                 });
             }

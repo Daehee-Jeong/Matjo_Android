@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -210,12 +209,12 @@ public class GroupDetailActivity extends AppCompatActivity {
                 String resultMsg = rootObj.get("resultMsg").getAsString();
 
                 if ("success".equals(resultData)) {
-                    Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("MyLog", resultMsg);
 
                     // 가입신청이 성공적으로 완료시 해당 모임의 모임장에게 푸쉬알림을 보낸다.
                     sendPush(groupBean);
                 } else {
-                    Toast.makeText(getApplicationContext(), resultMsg, Toast.LENGTH_SHORT).show();
+                    Log.d("MyLog", resultMsg);
                 }
             }
         }, new Response.ErrorListener() {
@@ -226,7 +225,7 @@ public class GroupDetailActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.d("MyLog", "error : " + err);
                     }
                 });
             }
@@ -269,7 +268,7 @@ public class GroupDetailActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.d("MyLog", "error : " + err);
                     }
                 });
             }
@@ -341,7 +340,7 @@ public class GroupDetailActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.d("MyLog", "error : " + err);
                     }
                 });
             }

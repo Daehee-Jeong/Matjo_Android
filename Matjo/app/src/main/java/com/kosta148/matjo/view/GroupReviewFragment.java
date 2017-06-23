@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RatingBar;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -182,7 +181,7 @@ public class GroupReviewFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.d("MyLog", "error : " + err);
                     }
                 });
             }
@@ -224,7 +223,7 @@ public class GroupReviewFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity().getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.d("MyLog", "error : " + err);
                     }
                 });
             }
@@ -256,7 +255,8 @@ public class GroupReviewFragment extends Fragment {
                 if ("ok".equals(resultData)) {
                     callGroupDetail();
                     sendPush(groupBean);
-                    Toast.makeText(getContext(), "개인리뷰를 작성하였습니다.", Toast.LENGTH_SHORT).show();
+                    Log.d("MyLog", "개인리뷰를 작성하였습니다.");
+
                 } else {
                 }
             }
@@ -268,7 +268,7 @@ public class GroupReviewFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog", "error : " + err);
                     }
                 });
             }
@@ -324,7 +324,7 @@ public class GroupReviewFragment extends Fragment {
                 dataSet();
 
                 checkMemberVolley();
-                Toast.makeText(getContext(), "수행완료", Toast.LENGTH_SHORT).show();
+                Log.d("MyLog", "수행완료");
             }
         }, new Response.ErrorListener() {
             @Override
@@ -334,7 +334,7 @@ public class GroupReviewFragment extends Fragment {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity().getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog", "error : " + err);
                     }
                 });
             }

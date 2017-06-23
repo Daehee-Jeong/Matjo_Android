@@ -3,8 +3,6 @@ package com.kosta148.matjo.view;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -187,7 +185,7 @@ public class PasswordFinderActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog", "error : " + err);
                     }
                 });
             }
@@ -232,7 +230,7 @@ public class PasswordFinderActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog","error : " + err);
                     }
                 });
             }
@@ -277,7 +275,7 @@ public class PasswordFinderActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), "error : " + err, Toast.LENGTH_SHORT).show();
+                        Log.e("MyLog", "error : " + err);
                     }
                 });
             }
